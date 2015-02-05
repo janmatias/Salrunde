@@ -70,8 +70,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 	
-	UIBarButtonItem *map = [[UIBarButtonItem alloc] initWithTitle:@"Kart" style:UIBarButtonItemStylePlain target:self action:@selector(showMap)];
-	self.navigationItem.rightBarButtonItem = map;
+	if (!self.room.tynnklient){
+		UIBarButtonItem *map = [[UIBarButtonItem alloc] initWithTitle:@"Kart" style:UIBarButtonItemStylePlain target:self action:@selector(showMap)];
+		self.navigationItem.rightBarButtonItem = map;
+	}
 	
 	[self setProperties];
 	

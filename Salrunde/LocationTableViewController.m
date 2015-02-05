@@ -96,7 +96,7 @@
 -(void)generateReport
 {
 	if ([self checkAllDefaultsSet]){
-		NSString *tmp = [self.gen generate:self.location];
+		NSString *tmp = [self.gen generate:self.location withNH:self.nh];
 		[self showEmailView: tmp forLoc:self.location];
 	}else{
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Feil!" message:[NSString stringWithFormat:@"%@ har ikke blitt lagret!", self.nameOfRoomThatGeneratedError] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];

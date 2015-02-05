@@ -10,8 +10,6 @@
 
 @interface NetworkHandler()
 
-//@property (strong, nonatomic) NSDictionary *delphi;
-//@property (strong, nonatomic) NSDictionary *skranke;
 @property (strong, nonatomic) NSArray *delphi;
 @property (strong, nonatomic) NSArray *skranke;
 
@@ -42,7 +40,7 @@
 					 [Room roomWithName:@"SB1 - 315" Building:@"SB1" ID:@"33962" A4:YES A3:YES svart:YES farge:YES kortleser:YES xero:NO fuser:NO],
 					 [Room roomWithName:@"SB1 - 316" Building:@"SB1" ID:@"33952" A4:YES A3:YES svart:YES farge:YES kortleser:YES xero:NO fuser:NO],
 					 [Room roomWithName:@"SB1 - 321" Building:@"SB1" ID:@"34190" A4:YES A3:YES svart:YES farge:YES kortleser:YES xero:NO fuser:NO],
-					 [Room tynnklienterWithName:@"Tynnklienter" Building:@"SB1"],
+					 [Room tynnklienterWithName:@"Tynnklienter" Building:@"SB1 & SB2"],
 					 [Room roomWithName:@"Ark. Bib." Building:@"SB1" ID:@"33889" A4:YES A3:YES svart:YES farge:YES kortleser:YES xero:NO fuser:NO],
 					 [Room roomWithName:@"Metal. 114" Building:@"Metalurgibygget" ID:@"36125" A4:YES A3:NO svart:YES farge:NO kortleser:YES xero:NO fuser:NO],
 					 [Room roomWithName:@"EL - G112" Building:@"EL-bygget" ID:@"29" A4:YES A3:NO svart:YES farge:YES kortleser: YES xero:NO fuser:NO],

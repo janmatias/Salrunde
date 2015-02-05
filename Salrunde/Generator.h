@@ -7,11 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-#import <MessageUI/MessageUI.h>
 
-@interface Generator : NSObject <MFMailComposeViewControllerDelegate>
+@interface Generator : NSObject
 
--(NSString *)generate:(NSString *)location;
+-(NSString *)generate:(NSString *)location withNH: (NetworkHandler *)nh;
 
 @end

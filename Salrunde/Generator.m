@@ -12,14 +12,13 @@
 
 @implementation Generator
 
--(NSString *)generate:(NSString *)location
+-(NSString *)generate:(NSString *)location withNH:(id)nh
 {
-	NetworkHandler *net = [[NetworkHandler alloc] init];
 	NSArray *rooms;
 	if ([location isEqualToString:@"Skranke"]){
-		rooms = [net getSkrankeRooms];
+		rooms = [nh getSkrankeRooms];
 	}else if ([location isEqualToString:@"Delphi"]){
-		rooms = [net getDelphiRooms];
+		rooms = [nh getDelphiRooms];
 	}else{
 		return @"";
 	}
@@ -44,7 +43,7 @@
 		[main appendString:[NSString stringWithFormat:@"// %@\n", room.name]];
 		
 		if (room.tynnklient) {
-			[main appendString:[NSString stringWithFormat:@"- %@", [d objectForKey:[NSString stringWithFormat:@"%@_kommentar\n\n", room.name]]]];
+			[main appendString:[NSString stringWithFormat:@"- %@\n\n", [d objectForKey:[NSString stringWithFormat:@"%@_kommentar", room.name]]]];
 			continue;
 		}
 		
@@ -101,11 +100,6 @@
 			[main appendString:@"\n"];
 		}
 	}
-	
-	NSDate *now = [NSDate date];
-	
-	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-	[defaults setObject:now forKey:location];
 	
 	return main;
 }

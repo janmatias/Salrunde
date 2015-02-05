@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0D24B3C21A82C57D004649A2 /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D24B3C11A82C57D004649A2 /* Room.swift */; };
+		0D24B3C41A8361B3004649A2 /* Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D24B3C31A8361B3004649A2 /* Generator.swift */; };
+		0D24B3C61A8363BC004649A2 /* NetworkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D24B3C51A8363BC004649A2 /* NetworkHandler.swift */; };
 		0D2B4CB81A7A3D1A00CC593B /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D2B4CB71A7A3D1A00CC593B /* MapViewController.m */; };
 		0D3C50F31A6D02C800FE641C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D3C50F21A6D02C800FE641C /* main.m */; };
 		0D3C50F61A6D02C800FE641C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D3C50F51A6D02C800FE641C /* AppDelegate.m */; };
@@ -37,6 +40,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0D24B3C11A82C57D004649A2 /* Room.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
+		0D24B3C31A8361B3004649A2 /* Generator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Generator.swift; sourceTree = "<group>"; };
+		0D24B3C51A8363BC004649A2 /* NetworkHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkHandler.swift; sourceTree = "<group>"; };
 		0D2B4CB61A7A3D1A00CC593B /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
 		0D2B4CB71A7A3D1A00CC593B /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
 		0D3C50ED1A6D02C800FE641C /* Salrunde.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Salrunde.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -176,10 +182,13 @@
 				0D3C51231A6D303400FE641C /* MyNavController.m */,
 				0D3C511F1A6D2F2600FE641C /* NetworkHandler.h */,
 				0D3C51201A6D2F2600FE641C /* NetworkHandler.m */,
+				0D24B3C51A8363BC004649A2 /* NetworkHandler.swift */,
 				0D7275961A70F61D002DCB6C /* Generator.h */,
 				0D7275971A70F61D002DCB6C /* Generator.m */,
+				0D24B3C31A8361B3004649A2 /* Generator.swift */,
 				0D5C23161A725739003881E9 /* Room.h */,
 				0D5C23171A725739003881E9 /* Room.m */,
+				0D24B3C11A82C57D004649A2 /* Room.swift */,
 			);
 			name = helperClasses;
 			sourceTree = "<group>";
@@ -290,10 +299,13 @@
 				0D2B4CB81A7A3D1A00CC593B /* MapViewController.m in Sources */,
 				0D3C512B1A6D344C00FE641C /* RoomCell.m in Sources */,
 				0D3C51241A6D303400FE641C /* MyNavController.m in Sources */,
+				0D24B3C21A82C57D004649A2 /* Room.swift in Sources */,
 				0D3C50F61A6D02C800FE641C /* AppDelegate.m in Sources */,
+				0D24B3C61A8363BC004649A2 /* NetworkHandler.swift in Sources */,
 				0D3C50F31A6D02C800FE641C /* main.m in Sources */,
 				0D3C51301A6D3F7D00FE641C /* PrinterViewController.m in Sources */,
 				0D3C511E1A6D2EEF00FE641C /* LocationTableViewController.m in Sources */,
+				0D24B3C41A8361B3004649A2 /* Generator.swift in Sources */,
 				0D3C51211A6D2F2600FE641C /* NetworkHandler.m in Sources */,
 				0D7275981A70F61D002DCB6C /* Generator.m in Sources */,
 			);
@@ -409,9 +421,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Salrunde/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -419,6 +433,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Salrunde/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
