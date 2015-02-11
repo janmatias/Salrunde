@@ -7,7 +7,6 @@
 //
 
 #import "Generator.h"
-#import "NetworkHandler.h"
 #import "Room.h"
 
 @implementation Generator
@@ -66,15 +65,15 @@
 			}
 			[main appendString:[NSString stringWithFormat:@"- Kortleser: %@\n", kort]];
 		}
-		
+		NSString *percentSignIfNeeded = room.lager ? @"" : @"%";
 		if (room.svart) {
-			[main appendString:[NSString stringWithFormat:@"- Svart toner: %@%%\n", [d objectForKey:[NSString stringWithFormat:@"%@_black", room.name]]]]; //SVART TONER
+			[main appendString:[NSString stringWithFormat:@"- Svart toner: %@%@\n", [d objectForKey:[NSString stringWithFormat:@"%@_black", room.name]], percentSignIfNeeded]];
 		}
 		
 		if (room.farge){
-			[main appendString:[NSString stringWithFormat:@"- Cyan toner: %@%%\n", [d objectForKey:[NSString stringWithFormat:@"%@_cyan", room.name]]]];
-			[main appendString:[NSString stringWithFormat:@"- Magenta toner: %@%%\n", [d objectForKey:[NSString stringWithFormat:@"%@_magenta", room.name]]]];
-			[main appendString:[NSString stringWithFormat:@"- Yellow toner: %@%%\n", [d objectForKey:[NSString stringWithFormat:@"%@_yellow", room.name]]]];
+			[main appendString:[NSString stringWithFormat:@"- Cyan toner: %@%@\n", [d objectForKey:[NSString stringWithFormat:@"%@_cyan", room.name]], percentSignIfNeeded]];
+			[main appendString:[NSString stringWithFormat:@"- Magenta toner: %@%@\n", [d objectForKey:[NSString stringWithFormat:@"%@_magenta", room.name]], percentSignIfNeeded]];
+			[main appendString:[NSString stringWithFormat:@"- Yellow toner: %@%@\n", [d objectForKey:[NSString stringWithFormat:@"%@_yellow", room.name]], percentSignIfNeeded]];
 		}else{
 			if (room.xero){
 				[main appendString:[NSString stringWithFormat:@"- Xerographic module: %@%%\n", [d objectForKey:[NSString stringWithFormat:@"%@_xero", room.name]]]];

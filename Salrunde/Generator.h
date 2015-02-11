@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "NetworkHandler.h"
 
 @interface Generator : NSObject
 
