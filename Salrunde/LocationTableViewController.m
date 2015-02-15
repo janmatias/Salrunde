@@ -117,7 +117,7 @@
 	for (int i = 0; i < [rooms count]; i++) {
 		NSDate *savedDate = [[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@_date", ((Room *)[rooms objectAtIndex:i]).name]];
 		
-		if (!savedDate || [savedDate timeIntervalSinceNow] >= 86400){
+		if (savedDate == nil || [savedDate timeIntervalSinceNow] >= 86400){
 			self.nameOfRoomThatGeneratedError = ((Room *)[rooms objectAtIndex:i]).name;
 			return false;
 		}
