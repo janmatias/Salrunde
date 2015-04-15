@@ -508,52 +508,105 @@
 -(void)setUpWithAutoLayout
 {
 	// generate objects
-	NSDictionary *labelDictionary = @{@0 : @"Svart", @1 : @"Cyan", @2 : @"Magenta", @3 : @"Yellow", @4 : @"A4", @5 : @"A3"};
+	NSDictionary *labelDictionary = @{@0 : @"Svart", @1 : @"Cyan", @2 : @"Magenta", @3 : @"Yellow", @10 : @"Kort", @12 : @"Op", @12 : @"A4@!!!!!!!!!!!!!!", @13 : @"A3"};
 	
-	NSMutableArray *labels = [[NSMutableArray alloc] init];
-	NSMutableArray *fields = [[NSMutableArray alloc] init];
+	NSArray* labels = [self genLabelsFromDic:labelDictionary];
+	NSArray *fields = [self genFieldsFromDic:labelDictionary];
 	
+	UILabel *commentLabel = [UILabel new];
+	commentLabel.translatesAutoresizingMaskIntoConstraints = NO;
+	commentLabel.text = @"Kommentar:";
+	[self.view addSubview:commentLabel];
 	
-	for (int i = 0; i<[[labelDictionary allKeys] count]; i++) {
-		// Lables
-		UILabel *label = [UILabel new];
-		//label.tag = i+100;
-		label.translatesAutoresizingMaskIntoConstraints = NO;
-		label.text = [labelDictionary objectForKey:[NSNumber numberWithInt:i]];
-		[self.view addSubview:label];
-
-		[labels addObject:label];
-		
-		// Text fields
-		UITextField *field = [UITextField new];
-		field.translatesAutoresizingMaskIntoConstraints = NO;
-		field.text = @"test";
-		field.borderStyle = UITextBorderStyleRoundedRect;
-		[self.view addSubview:field];
-		[fields addObject:field];
-
-	}
-	
-	
+	UITextView *commentField = [UITextView new];
+	commentField.translatesAutoresizingMaskIntoConstraints = NO;
+	commentField.layer.borderWidth = 2.0f;
+	commentField.layer.borderColor = [[UIColor grayColor] CGColor];
 	
 	// generate autolayout
+	
+	NSDictionary *metrics = @{@"offsetTop" : @20,
+							  @"offsetLabels" : @25,
+							  @"offsetFields" : @16,
+							  @"leftMargin" : @12,
+							  @"horizontalOffset" : @12};
 	
 	NSDictionary *v_dic = @{@"labels0" : labels[0],
 							@"labels1" : labels[1],
 							@"labels2" : labels[2],
 							@"labels3" : labels[3],
-							@"labels4" : labels[4],
-							@"labels5" : labels[5],
+							
+							@"labels10" : labels[4],
+							@"labels11" : labels[5],
+							@"labels12" : labels[6],
+							@"labels13" : labels[7],
 							
 							@"fields0" : fields[0],
 							@"fields1" : fields[1],
 							@"fields2" : fields[2],
 							@"fields3" : fields[3],
-							@"fields4" : fields[4],
-							@"fields5" : fields[5],
+							
+							@"fields10" : fields[4],
+							@"fields11" : fields[5],
+							@"fields12" : fields[6],
+							@"fields13" : fields[7],
+							
+							@"commentLabel" : commentLabel,
+							@"commentField" : commentField,
 							
 							@"top" : self.topLayoutGuide};
-
+	
+	NSArray *column1 = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[top]-offsetTop-[labels0]-offsetLabels-[labels1]-offsetLabels-[labels2]-offsetLabels-[labels3]"
+															   options:0
+															   metrics:metrics
+																 views:v_dic];
+	
+	NSArray *column2 = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[top]-offsetTop-[fields0]-offsetFields-[fields1]-offsetFields-[fields2]-offsetFields-[fields3]"
+															   options:0
+															   metrics:metrics
+																 views:v_dic];
+	
+	NSArray *column3 = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[top]-offsetTop-[labels10]-offsetLabels-[labels11]-offsetLabels-[labels12]-offsetLabels-[labels13]"
+															   options:0
+															   metrics:metrics
+																 views:v_dic];
+	
+	NSArray *column4 = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[top]-offsetTop-[fields10]-offsetFields-[fields11]-offsetFields-[fields12]-offsetFields-[fields13]"
+															   options:0
+															   metrics:metrics
+																 views:v_dic];
+	
+	NSArray *row1 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-leftMargin-[labels0]-horizontalOffset-[fields0(60)]-horizontalOffset-[labels10]-horizontalOffset-[fields10(60)]"
+															options:NSLayoutFormatDirectionLeftToRight
+															metrics:metrics
+															  views:v_dic];
+	
+	NSArray *row2 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-leftMargin-[labels1]-horizontalOffset-[fields1(60)]-horizontalOffset-[labels11]-horizontalOffset-[fields11(60)]"
+															options:NSLayoutFormatDirectionLeftToRight
+															metrics:metrics
+															  views:v_dic];
+	
+	NSArray *row3 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-leftMargin-[labels2]-horizontalOffset-[fields2(60)]-horizontalOffset-[labels12]-horizontalOffset-[fields12(60)]"
+															options:NSLayoutFormatDirectionLeftToRight
+															metrics:metrics
+															  views:v_dic];
+	
+	NSArray *row4 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-leftMargin-[labels3]-horizontalOffset-[fields3(60)]-horizontalOffset-[labels13]-horizontalOffset-[fields13(60)]"
+															options:NSLayoutFormatDirectionLeftToRight
+															metrics:metrics
+															  views:v_dic];
+	
+	[self.view addConstraints:column1];
+	[self.view addConstraints:column2];
+	[self.view addConstraints:column3];
+	[self.view addConstraints:column4];
+	[self.view addConstraints:row1];
+	[self.view addConstraints:row2];
+	[self.view addConstraints:row3];
+	[self.view addConstraints:row4];
+	
+	
+	/*
 	NSArray *labels_VC = [NSLayoutConstraint
 							constraintsWithVisualFormat:@"V:|[top]-offsetTop-[labels0]-offsetLabels-[labels1]-offsetLabels-[labels2]-offsetLabels-[labels3]-offsetLabels-[labels4]-offsetLabels-[labels5]"
 							options:0
@@ -570,8 +623,23 @@
 	
 	[self.view addConstraints:fields_VC];
 	
+	NSArray *switches_VC = [NSLayoutConstraint
+						  constraintsWithVisualFormat:@"V:|[top]-offsetTop-[switch0(30)]"
+						  options:0
+						  metrics:@{@"offsetTop": @20, @"offsetLabels" : @16}
+						  views:v_dic];
+	
+	[self.view addConstraints:switches_VC];
+	
 	for (UILabel *l in labels){
-		NSString *s = [NSString stringWithFormat:@"H:|-12-[labels%i]-25-[fields%i(60)]", [labels indexOfObject:l], [labels indexOfObject:l]];
+		int i = [labels indexOfObject:l];
+		NSString *s;
+		if (i == 0){
+			s = [NSString stringWithFormat:@"H:|-12-[labels%i][spacer1][fields%i(60)][spacer2(==spacer1)][switch0(60)]", i, i];
+		}else{
+			s = [NSString stringWithFormat:@"H:|-12-[labels%i]-25-[fields%i(60)]", i, i];
+		}
+		
 		
 		NSArray *label_HC = [NSLayoutConstraint
 							  constraintsWithVisualFormat:s
@@ -582,7 +650,7 @@
 		[self.view addConstraints:label_HC];
 		
 		s = [NSString stringWithFormat:@"H:[fields%i(60)]", [labels indexOfObject:l]];
-		
+		*/
 		/*NSArray *field_HC = [NSLayoutConstraint
 							 constraintsWithVisualFormat:s
 							 options:0
@@ -591,11 +659,125 @@
 		
 		[self.view addConstraints:field_HC];*/
 	
+	//}
+}
+
+-(NSArray*)genLabelsFromDic: (NSDictionary *)labelDictionary
+{
+	NSMutableArray *array = [[NSMutableArray alloc] init];
+	
+	UILabel *label0 = [UILabel new];
+	label0.translatesAutoresizingMaskIntoConstraints = NO;
+	label0.text = [labelDictionary objectForKey:@0];
+	[self.view addSubview:label0];
+	[array addObject:label0];
+	
+	UILabel *label1 = [UILabel new];
+	label1.translatesAutoresizingMaskIntoConstraints = NO;
+	label1.text = [labelDictionary objectForKey:@1];
+	[self.view addSubview:label1];
+	[array addObject:label1];
+	
+	UILabel *label2 = [UILabel new];
+	label2.translatesAutoresizingMaskIntoConstraints = NO;
+	label2.text = [labelDictionary objectForKey:@2];
+	[self.view addSubview:label2];
+	[array addObject:label2];
+	
+	UILabel *label3 = [UILabel new];
+	label3.translatesAutoresizingMaskIntoConstraints = NO;
+	label3.text = [labelDictionary objectForKey:@3];
+	[self.view addSubview:label3];
+	[array addObject:label3];
+	
+	UILabel *label10 = [UILabel new];
+	label10.translatesAutoresizingMaskIntoConstraints = NO;
+	label10.text = [labelDictionary objectForKey:@10];
+	[self.view addSubview:label10];
+	[array addObject:label10];
+	
+	UILabel *label11 = [UILabel new];
+	label11.translatesAutoresizingMaskIntoConstraints = NO;
+	label11.text = [labelDictionary objectForKey:@11];
+	[self.view addSubview:label11];
+	[array addObject:label11];
+	
+	UILabel *label12 = [UILabel new];
+	label12.translatesAutoresizingMaskIntoConstraints = NO;
+	label12.text = [labelDictionary objectForKey:@12];
+	[self.view addSubview:label12];
+	[array addObject:label12];
+	
+	UILabel *label13 = [UILabel new];
+	label13.translatesAutoresizingMaskIntoConstraints = NO;
+	label13.text = [labelDictionary objectForKey:@13];
+	[self.view addSubview:label13];
+	[array addObject:label13];
+	
+	for (int i = 0; i<8; i++){
+		UILabel *currentLabel = [array objectAtIndex:i];
+		if ([currentLabel.text isEqualToString:@"nil"]){
+			currentLabel.hidden = YES;
+		}
+	
 	}
-
 	
-	
+	return array;
+}
 
+-(NSArray*)genFieldsFromDic: (NSDictionary *)labelDictionary
+{
+	NSMutableArray *array = [[NSMutableArray alloc] init];
+	
+	UITextField *field0 = [UITextField new];
+	field0.translatesAutoresizingMaskIntoConstraints = NO;
+	field0.borderStyle = UITextBorderStyleRoundedRect;
+	[self.view addSubview:field0];
+	[array addObject:field0];
+	
+	UITextField *field1 = [UITextField new];
+	field1.translatesAutoresizingMaskIntoConstraints = NO;
+	field1.borderStyle = UITextBorderStyleRoundedRect;
+	[self.view addSubview:field1];
+	[array addObject:field1];
+	
+	UITextField *field2 = [UITextField new];
+	field2.translatesAutoresizingMaskIntoConstraints = NO;
+	field2.borderStyle = UITextBorderStyleRoundedRect;
+	[self.view addSubview:field2];
+	[array addObject:field2];
+	
+	UITextField *field3 = [UITextField new];
+	field3.translatesAutoresizingMaskIntoConstraints = NO;
+	field3.borderStyle = UITextBorderStyleRoundedRect;
+	[self.view addSubview:field3];
+	[array addObject:field3];
+	
+	UISwitch *field10 = [UISwitch new];
+	field10.translatesAutoresizingMaskIntoConstraints = NO;
+	field10.on = YES;
+	[self.view addSubview:field10];
+	[array addObject:field10];
+	
+	UISwitch *field11 = [UISwitch new];
+	field11.translatesAutoresizingMaskIntoConstraints = NO;
+	field11.on = YES;
+	[self.view addSubview:field11];
+	[array addObject:field11];
+	
+	UITextField *field12 = [UITextField new];
+	field12.translatesAutoresizingMaskIntoConstraints = NO;
+	field12.borderStyle = UITextBorderStyleRoundedRect;
+	[self.view addSubview:field12];
+	[array addObject:field12];
+	
+	UITextField *field13 = [UITextField new];
+	field13.translatesAutoresizingMaskIntoConstraints = NO;
+	field13.borderStyle = UITextBorderStyleRoundedRect;
+	[self.view addSubview:field13];
+	[array addObject:field13];
+
+	return array;
 }
 
 @end

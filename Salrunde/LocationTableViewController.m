@@ -17,7 +17,7 @@
 @interface LocationTableViewController ()
 
 @property (strong, nonatomic) NetworkHandler* nh;
-@property (strong, nonatomic) Generator *gen;
+@property (strong, nonatomic) Generator *generator;
 @property (strong, nonatomic) Room *selected;
 @property (strong, nonatomic) NSString *nameOfRoomThatGeneratedError;
 @property (nonatomic) BOOL SIMULATOR;
@@ -28,9 +28,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+	
 	self.nh = ((MyNavController *)self.navigationController).nh;
 	
-	self.gen = [[Generator alloc] init];
+	self.generator = [[Generator alloc] init];
 	
 	self.tableView.rowHeight = 44;
 	self.title = self.location;
@@ -42,11 +43,6 @@
 	if ([[[UIDevice currentDevice] model] isEqualToString:@"iPhone Simulator"]){
 		self.SIMULATOR = YES;
 	}
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Table view data source
@@ -95,8 +91,8 @@
 
 -(void)generateReport
 {
-	if ([self checkAllDefaultsSet]){
-		NSString *tmp = [self.gen generate:self.location withNH:self.nh];
+	if ([self allRoomsEditedLast24H]){
+		NSString *tmp = [self.generator generate:self.location withNH:self.nh];
 		[self showEmailView: tmp forLoc:self.location];
 	}else{
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Feil!" message:[NSString stringWithFormat:@"%@ har ikke blitt lagret!", self.nameOfRoomThatGeneratedError] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
@@ -104,7 +100,7 @@
 	}
 }
 
--(BOOL)checkAllDefaultsSet
+-(BOOL)allRoomsEditedLast24H
 {
 	NSArray *rooms;
 	
@@ -124,6 +120,8 @@
 	}
 	return true;
 }
+
+# pragma mark - Email
 
 -(void)showEmailView:(NSString *)contents forLoc:(NSString *)loc
 {
@@ -235,7 +233,6 @@
 
 #pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.

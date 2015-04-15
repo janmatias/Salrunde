@@ -24,6 +24,7 @@
 		0D61A6741A778083009F89D8 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D61A6731A778083009F89D8 /* MessageUI.framework */; };
 		0D61A7401A77E238009F89D8 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D61A73F1A77E238009F89D8 /* SettingsViewController.m */; };
 		0D7275981A70F61D002DCB6C /* Generator.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D7275971A70F61D002DCB6C /* Generator.m */; };
+		3D013D381AD6A3CC00196A0B /* NotesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D013D371AD6A3CC00196A0B /* NotesViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,8 @@
 		0D61A73F1A77E238009F89D8 /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		0D7275961A70F61D002DCB6C /* Generator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Generator.h; sourceTree = "<group>"; };
 		0D7275971A70F61D002DCB6C /* Generator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Generator.m; sourceTree = "<group>"; };
+		3D013D361AD6A3CC00196A0B /* NotesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotesViewController.h; sourceTree = "<group>"; };
+		3D013D371AD6A3CC00196A0B /* NotesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotesViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +166,8 @@
 				0D61A73F1A77E238009F89D8 /* SettingsViewController.m */,
 				0D2B4CB61A7A3D1A00CC593B /* MapViewController.h */,
 				0D2B4CB71A7A3D1A00CC593B /* MapViewController.m */,
+				3D013D361AD6A3CC00196A0B /* NotesViewController.h */,
+				3D013D371AD6A3CC00196A0B /* NotesViewController.m */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -286,6 +291,7 @@
 			files = (
 				0D5C23181A725739003881E9 /* Room.m in Sources */,
 				0D3C50F91A6D02C800FE641C /* MainViewController.m in Sources */,
+				3D013D381AD6A3CC00196A0B /* NotesViewController.m in Sources */,
 				0D61A7401A77E238009F89D8 /* SettingsViewController.m in Sources */,
 				0D2B4CB81A7A3D1A00CC593B /* MapViewController.m in Sources */,
 				0D3C512B1A6D344C00FE641C /* RoomCell.m in Sources */,

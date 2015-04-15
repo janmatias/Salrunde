@@ -9,10 +9,6 @@
 #import "MainViewController.h"
 #import "LocationTableViewController.h"
 
-@interface MainViewController ()
-
-@end
-
 @implementation MainViewController
 
 - (void)viewDidLoad {
@@ -21,17 +17,19 @@
 	UIBarButtonItem *settings = [[UIBarButtonItem alloc] initWithTitle:@"Innstillinger" style:UIBarButtonItemStylePlain target:self action:@selector(pressSettings)];
 	self.navigationItem.rightBarButtonItem = settings;
 	
-	// Do any additional setup after loading the view, typically from a nib.
-}
-
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-	// Dispose of any resources that can be recreated.
+	[self.navigationController setToolbarHidden:NO];
+	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showNotes)];
+	[self.navigationController.toolbar addGestureRecognizer:tap];
 }
 
 -(void)pressSettings
 {
 	[self performSegueWithIdentifier:@"showSettings" sender:nil];
+}
+
+-(void)showNotes
+{
+	[self performSegueWithIdentifier:@"showNotes" sender:nil];
 }
 
 - (IBAction)showLocation:(UIButton *)sender {
