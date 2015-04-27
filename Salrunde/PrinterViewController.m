@@ -38,6 +38,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *A3Label;
 @property (weak, nonatomic) IBOutlet UITextField *A3TextField;
 
+@property (weak, nonatomic) IBOutlet UILabel *commentLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *commentLabelConstraint;
 @property (weak, nonatomic) IBOutlet UITextView *commentTextView;
 
 @property (strong, nonatomic) UITextField *selectedTextField;
@@ -56,6 +58,8 @@
 @property (strong, nonatomic) NSMutableArray *printerTonerValues;
 @property (strong, nonatomic) NSArray *textFields;
 
+@property (strong, nonatomic) UIBarButtonItem *map;
+@property (strong, nonatomic) UIBarButtonItem *done;
 
 @property (strong, nonatomic) UIPickerView *picker;
 @property (strong, nonatomic) UIToolbar *inputAccessoryToolbar;
@@ -68,16 +72,13 @@
     [super viewDidLoad];
 	
 	if (!self.room.tynnklient){
-		UIBarButtonItem *map = [[UIBarButtonItem alloc] initWithTitle:@"Kart" style:UIBarButtonItemStylePlain target:self action:@selector(showMap)];
-		self.navigationItem.rightBarButtonItem = map;
+		self.map = [[UIBarButtonItem alloc] initWithTitle:@"Kart" style:UIBarButtonItemStylePlain target:self action:@selector(showMap)];
+		self.navigationItem.rightBarButtonItem = self.map;
 	}
 	
+	self.done = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(resignFirstResponders)];
+	
 	[self setProperties];
-	
-	// currently under testing
-	[self setUpWithAutoLayout:[self createDictionaryForAL]];
-	// Back to normal
-	
 	
 	[self setUpPicker];
 	[self setUpAccessoryToolbar];
@@ -132,8 +133,7 @@
 	UIBarButtonItem *flexSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
 	[barItems addObject:flexSpace];
 	
-	UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(resignFirstResponders)];
-	[barItems addObject:doneBtn];
+	[barItems addObject:self.done];
 	
 	[self.inputAccessoryToolbar setItems:barItems animated:YES];
 }
@@ -158,21 +158,6 @@
 	self.selectedTextField.text = [self.currentArray objectAtIndex:row];
 }
 
-#pragma mark Slider Methods
-/*
-- (IBAction)sliderChanged:(UISlider *)sender {
-	
-	if ([sender isEqual:self.blackSlider]) {
-		self.blackTextField.text = [NSString stringWithFormat:@"%i%%", (int)round(sender.value)];
-	}else if ([sender isEqual:self.cyanSlider]){
-		self.cyanTextField.text = [NSString stringWithFormat:@"%i%%", (int)round(sender.value)];
-	}else if ([sender isEqual:self.magentaSlider]){
-		self.magentaTextField.text = [NSString stringWithFormat:@"%i%%", (int)round(sender.value)];
-	}else if ([sender isEqual:self.yellowSlider]){
-		self.yellowTextField.text = [NSString stringWithFormat:@"%i%%", (int)round(sender.value)];
-	}
-}
-*/
 #pragma mark TextField/TextView Delegate Methods
 
 -(BOOL)textFieldShouldBeginEditing:(UITextField *)textField
@@ -204,6 +189,7 @@
 
 -(void)textViewDidBeginEditing:(UITextView *)textView
 {
+	self.navigationItem.rightBarButtonItem = self.done;
 	[UIView animateWithDuration:0.2 animations:^{
 		int goal = self.view.frame.size.height/2.5;
 		int posInView = textView.center.y;
@@ -315,22 +301,32 @@
 	}
 	
 	self.commentTextView.delegate = self;
-	self.commentTextView.inputAccessoryView = self.inputAccessoryToolbar;
+	self.commentTextView.backgroundColor = [UIColor whiteColor];
 	self.commentTextView.layer.borderWidth = 2.0f;
 	self.commentTextView.layer.borderColor = [[UIColor grayColor] CGColor];
 }
 
 -(void)iterateOverOptions
 {
+	if (!self.color && !self.A3){
+		self.commentLabelConstraint.constant -= 82;
+		[self.view layoutIfNeeded];
+	}
 	
 	if ([self.room.name isEqualToString:@"Real. Bib."]) {
 		self.extraLabel.text = @"reapub";
 		[self.extraLabel setHidden:NO];
 		[self.extraSwitch setHidden:NO];
+		self.extraSwitch.on = YES;
 	}
 	
 	if ([self.room.name isEqualToString:@"Sahara"] && [self.commentTextView.text isEqualToString:@""]){
 		self.commentTextView.text = @"Alt OK!";
+		self.commentLabelConstraint.constant = 12;
+		[self.view layoutIfNeeded];
+		
+		[self.blackLabel setHidden:YES];
+		[self.extraSwitch setHidden:YES];
 	}
 	
 	if (self.storageUnit){
@@ -352,13 +348,13 @@
 		}
 		if (!self.color) {
 			if (self.room.xero){
-				self.cyanLabel.text = @"Xerographic module";
+				self.cyanLabel.text = @"Xerographic";
 			}else{
 				self.cyanLabel.hidden = YES;
 				self.cyanTextField.hidden = YES;
 			}
 			if (self.room.fuser){
-				self.magentaLabel.text = @"Fuser module";
+				self.magentaLabel.text = @"Fuser";
 			}else{
 				self.magentaLabel.hidden = YES;
 				self.magentaTextField.hidden = YES;
@@ -380,6 +376,11 @@
 -(void)resignFirstResponders
 {
 	if ([self.commentTextView isFirstResponder]){
+		if (self.room.tynnklient){
+			self.navigationItem.rightBarButtonItem = nil;
+		}else{
+			self.navigationItem.rightBarButtonItem = self.map;
+		}
 		[self.commentTextView resignFirstResponder];
 		return;
 	}
@@ -508,271 +509,6 @@
 			next.ID = self.room.ID;
 		}
 	}
-}
-
--(NSDictionary*)createDictionaryForAL
-{
-	NSDictionary *labelDictionary = [[NSDictionary alloc] init];
-	
-	int count = 0;
-	
-	//[labelDictionary setValue:@"Svart" forKey:[NSNumber numberWithInt:count]];
-	
-	
-	
-	return @{@0 : @"Svart", @1 : @"Cyan", @2 : @"Magenta", @3 : @"Yellow", @4 : @"Kort", @5 : @"Op", @6 : @"A4", @7 : @"A3"};
-}
-
--(void)setUpWithAutoLayout:(NSDictionary*)labelDictionary
-{
-	NSArray* labels = [self genLabelsFromDic:labelDictionary];
-	NSArray *fields = [self genFieldsFromDic:labelDictionary];
-	
-	[self connectFields:fields AndLabels:labels AndLabelDic:labelDictionary];
-	
-	UILabel *commentLabel = [UILabel new];
-	commentLabel.translatesAutoresizingMaskIntoConstraints = NO;
-	commentLabel.text = @"Kommentar:";
-	[self.view addSubview:commentLabel];
-	
-	UITextView *commentField = [UITextView new];
-	commentField.translatesAutoresizingMaskIntoConstraints = NO;
-	[self.view addSubview:commentField];
-	self.commentTextView = commentField;
-	
-	// generate autolayout
-	
-	NSDictionary *metrics = @{@"offsetTop" : @20,
-							  @"commentWidth" : [NSNumber numberWithInt: self.view.frame.size.width-24],
-							  @"horizontalOffset" : @12,
-							  @"offsetLF" : @5,
-							  @"offsetFL" : @12,
-							  @"gap": @80};
-	
-	NSDictionary *v_dic = @{@"labels0" : labels[0],
-							@"labels1" : labels[1],
-							@"labels2" : labels[2],
-							@"labels3" : labels[3],
-							
-							@"labels10" : labels[4],
-							@"labels11" : labels[5],
-							@"labels12" : labels[6],
-							@"labels13" : labels[7],
-							
-							@"fields0" : fields[0],
-							@"fields1" : fields[1],
-							@"fields2" : fields[2],
-							@"fields3" : fields[3],
-							
-							@"fields10" : fields[4],
-							@"fields11" : fields[5],
-							@"fields12" : fields[6],
-							@"fields13" : fields[7],
-							
-							@"commentLabel" : commentLabel,
-							@"commentField" : commentField,
-							
-							@"top" : self.topLayoutGuide,
-							@"bottom" : self.bottomLayoutGuide};
-	
-	NSArray *column1 = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[top]-offsetTop-[labels0]-offsetLF-[fields0]-offsetFL-[labels1]-offsetLF-[fields1]-offsetFL-[labels2]-offsetLF-[fields2]-offsetFL-[labels3]-offsetLF-[fields3]-offsetFL-[commentLabel]-offsetLF-[commentField]-[bottom]"
-															   options:0
-															   metrics:metrics
-																 views:v_dic];
-	[self.view addConstraints:column1];
-	
-	NSArray *column2 = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[top]-offsetTop-[labels10]-offsetLF-[fields10]-offsetFL-[labels11]-offsetLF-[fields11]-offsetFL-[labels12]-offsetLF-[fields12]-offsetFL-[labels13]-offsetLF-[fields13]"
-															   options:NSLayoutFormatAlignAllLeading
-															   metrics:metrics
-																 views:v_dic];
-	[self.view addConstraints:column2];
-	
-	NSArray *row1 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[labels0]-gap-[labels10]"
-															options:0
-															metrics:metrics
-															  views:v_dic];
-	[self.view addConstraints:row1];
-	
-	NSArray *row2 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[labels1]-gap-[labels11]"
-															options:0
-															metrics:metrics
-															  views:v_dic];
-	[self.view addConstraints:row2];
-	
-	NSArray *row3 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[labels2]-gap-[labels12]"
-															options:0
-															metrics:metrics
-															  views:v_dic];
-	[self.view addConstraints:row3];
-	
-	NSArray *row4 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[labels3]-gap-[labels13]"
-															options:0
-															metrics:metrics
-															  views:v_dic];
-	[self.view addConstraints:row4];
-	
-	
-	NSArray *row11 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[fields0(80)]-gap-[fields10(80)]"
-															options:0
-															metrics:metrics
-															  views:v_dic];
-	
-	[self.view addConstraints:row11];
-	
-	NSArray *row12 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[fields1(80)]-gap-[fields11(80)]"
-															options:0
-															metrics:metrics
-															  views:v_dic];
-	[self.view addConstraints:row12];
-	
-	NSArray *row13 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[fields2(80)]-gap-[fields12(80)]"
-															options:0
-															metrics:metrics
-															  views:v_dic];
-	[self.view addConstraints:row13];
-	
-	NSArray *row14 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[fields3(80)]-gap-[fields13(80)]"
-															options:0
-															metrics:metrics
-															  views:v_dic];
-	[self.view addConstraints:row14];
-	
-	NSArray *rowCL = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-horizontalOffset-[commentLabel]"
-															options:0
-															metrics:metrics
-															  views:v_dic];
-	[self.view addConstraints:rowCL];
-	
-	NSArray *rowC = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-horizontalOffset-[commentField(commentWidth)]"
-															 options:0
-															 metrics:metrics
-															   views:v_dic];
-	[self.view addConstraints:rowC];
-	
-	
-}
-
--(void)connectFields:(NSArray *)fields AndLabels: (NSArray *)labels AndLabelDic: (NSDictionary *)dic
-{
-
-	if (self.black){
-		self.blackLabel = labels[0];
-		self.blackTextField = fields[0];
-	}
-	if (self.color){
-		//self.cyanLabel =
-	}
-	
-}
-
--(NSArray*)genLabelsFromDic: (NSDictionary *)labelDictionary
-{
-	NSMutableArray *array = [[NSMutableArray alloc] init];
-	
-	UILabel *label0 = [UILabel new];
-	label0.translatesAutoresizingMaskIntoConstraints = NO;
-	label0.text = [labelDictionary objectForKey:@0];
-	[self.view addSubview:label0];
-	[array addObject:label0];
-	
-	UILabel *label1 = [UILabel new];
-	label1.translatesAutoresizingMaskIntoConstraints = NO;
-	label1.text = [labelDictionary objectForKey:@1];
-	[self.view addSubview:label1];
-	[array addObject:label1];
-	
-	UILabel *label2 = [UILabel new];
-	label2.translatesAutoresizingMaskIntoConstraints = NO;
-	label2.text = [labelDictionary objectForKey:@2];
-	[self.view addSubview:label2];
-	[array addObject:label2];
-	
-	UILabel *label3 = [UILabel new];
-	label3.translatesAutoresizingMaskIntoConstraints = NO;
-	label3.text = [labelDictionary objectForKey:@3];
-	[self.view addSubview:label3];
-	[array addObject:label3];
-	
-	UILabel *label10 = [UILabel new];
-	label10.translatesAutoresizingMaskIntoConstraints = NO;
-	label10.text = [labelDictionary objectForKey:@4];
-	[self.view addSubview:label10];
-	[array addObject:label10];
-	
-	UILabel *label11 = [UILabel new];
-	label11.translatesAutoresizingMaskIntoConstraints = NO;
-	label11.text = [labelDictionary objectForKey:@4];
-	[self.view addSubview:label11];
-	[array addObject:label11];
-	
-	UILabel *label12 = [UILabel new];
-	label12.translatesAutoresizingMaskIntoConstraints = NO;
-	label12.text = [labelDictionary objectForKey:@5];
-	[self.view addSubview:label12];
-	[array addObject:label12];
-	
-	UILabel *label13 = [UILabel new];
-	label13.translatesAutoresizingMaskIntoConstraints = NO;
-	label13.text = [labelDictionary objectForKey:@6];
-	[self.view addSubview:label13];
-	[array addObject:label13];
-	
-	return array;
-}
-
--(NSArray*)genFieldsFromDic: (NSDictionary *)labelDictionary
-{
-	NSMutableArray *array = [[NSMutableArray alloc] init];
-	
-	UITextField *field0 = [UITextField new];
-	field0.translatesAutoresizingMaskIntoConstraints = NO;
-	field0.borderStyle = UITextBorderStyleRoundedRect;
-	[self.view addSubview:field0];
-	[array addObject:field0];
-	
-	UITextField *field1 = [UITextField new];
-	field1.translatesAutoresizingMaskIntoConstraints = NO;
-	field1.borderStyle = UITextBorderStyleRoundedRect;
-	[self.view addSubview:field1];
-	[array addObject:field1];
-	
-	UITextField *field2 = [UITextField new];
-	field2.translatesAutoresizingMaskIntoConstraints = NO;
-	field2.borderStyle = UITextBorderStyleRoundedRect;
-	[self.view addSubview:field2];
-	[array addObject:field2];
-	
-	UITextField *field3 = [UITextField new];
-	field3.translatesAutoresizingMaskIntoConstraints = NO;
-	field3.borderStyle = UITextBorderStyleRoundedRect;
-	[self.view addSubview:field3];
-	[array addObject:field3];
-	
-	UISwitch *field10 = [UISwitch new];
-	field10.translatesAutoresizingMaskIntoConstraints = NO;
-	field10.on = YES;
-	[self.view addSubview:field10];
-	[array addObject:field10];
-	
-	UISwitch *field11 = [UISwitch new];
-	field11.translatesAutoresizingMaskIntoConstraints = NO;
-	field11.on = YES;
-	[self.view addSubview:field11];
-	[array addObject:field11];
-	
-	UITextField *field12 = [UITextField new];
-	field12.translatesAutoresizingMaskIntoConstraints = NO;
-	field12.borderStyle = UITextBorderStyleRoundedRect;
-	[self.view addSubview:field12];
-	[array addObject:field12];
-	
-	UITextField *field13 = [UITextField new];
-	field13.translatesAutoresizingMaskIntoConstraints = NO;
-	field13.borderStyle = UITextBorderStyleRoundedRect;
-	[self.view addSubview:field13];
-	[array addObject:field13];
-
-	return array;
 }
 
 @end

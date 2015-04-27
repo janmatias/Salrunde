@@ -21,7 +21,7 @@
 {
 	self.delphi = @[[Room roomWithName:@"Lerkendal H" Building:@"Lerkendalsbygget" ID:@"38019" A4:YES A3:YES svart:YES farge:YES kortleser:YES xero:NO fuser:NO],
 					[Room roomWithName:@"Lerkendal V" Building:@"Lerkendalsbygget" ID:@"38019" A4:YES A3:YES svart:YES farge:YES kortleser:YES xero:NO fuser:NO],
-					[Room roomWithName:@"Alkymi" Building:@"Realfagsbygget" ID:@"33286" A4:YES A3:NO svart:YES farge:YES kortleser:YES xero:NO fuser:NO],
+					[Room roomWithName:@"Alkymi" Building:@"Realfagsbygget" ID:@"33286" A4:YES A3:YES svart:YES farge:YES kortleser:YES xero:NO fuser:NO],
 					[Room roomWithName:@"D1-102" Building:@"Realfagsbygget" ID:@"36162" A4:YES A3:NO svart:YES farge:NO kortleser:YES xero:YES fuser:YES],
 					[Room roomWithName:@"D1-185" Building:@"Realfagsbygget" ID:@"36163" A4:YES A3:NO svart:YES farge:NO kortleser:YES xero:YES fuser:YES],
 					[Room roomWithName:@"Meru" Building:@"Realfagsbygget" ID:@"35481" A4:YES A3:YES svart:YES farge:YES kortleser:YES xero:NO fuser:NO],
