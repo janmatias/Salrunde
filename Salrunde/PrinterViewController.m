@@ -14,8 +14,8 @@
 
 @property (nonatomic) CGPoint originalCenter;
 
-@property (weak, nonatomic) IBOutlet UISwitch *kortleserSwitch;
-@property (weak, nonatomic) IBOutlet UILabel *kortleserLabel;
+@property (weak, nonatomic) IBOutlet UISwitch *cardReaderSwitch;
+@property (weak, nonatomic) IBOutlet UILabel *cardReaderLabel;
 
 @property (weak, nonatomic) IBOutlet UILabel *extraLabel;
 @property (weak, nonatomic) IBOutlet UISwitch *extraSwitch;
@@ -43,12 +43,12 @@
 @property (strong, nonatomic) UITextField *selectedTextField;
 @property (strong, nonatomic) NSArray *currentArray;
 
-@property (nonatomic) BOOL kortleser;
-@property (nonatomic) BOOL svart;
-@property (nonatomic) BOOL farge;
+@property (nonatomic) BOOL cardReader;
+@property (nonatomic) BOOL black;
+@property (nonatomic) BOOL color;
 @property (nonatomic) BOOL A3;
 @property (nonatomic) BOOL A4;
-@property (nonatomic) BOOL lager;
+@property (nonatomic) BOOL storageUnit;
 
 @property (strong, nonatomic) NSArray *lagerTonerValues;
 @property (strong, nonatomic) NSArray *lagerPaperValues;
@@ -74,6 +74,11 @@
 	
 	[self setProperties];
 	
+	// currently under testing
+	[self setUpWithAutoLayout:[self createDictionaryForAL]];
+	// Back to normal
+	
+	
 	[self setUpPicker];
 	[self setUpAccessoryToolbar];
 	[self setUpTextFields];
@@ -82,9 +87,6 @@
 	
 	[self setTextFields]; // Sets default text in the text fields
 	[self syncWithUserDefaults]; // Sets last saved data in the fields
-	
-	// currently under testing
-	[self setUpWithAutoLayout];
 }
 
 -(void)setProperties
@@ -92,21 +94,23 @@
 	self.navigationController.delegate = self;
 	self.title = self.room.name;
 	
-	self.kortleser = self.room.kortleser;
-	self.farge = self.room.farge;
-	self.svart = self.room.svart;
+	self.cardReader = self.room.kortleser;
+	self.color = self.room.farge;
+	self.black = self.room.svart;
 	self.A3 = self.room.A3;
 	self.A4 = self.room.A4;
-	self.lager = self.room.lager;
+	self.storageUnit = self.room.lager;
 	self.originalCenter = self.view.center;
 	self.textFields = [NSArray arrayWithObjects:self.A4TextField, self.A3TextField, self.blackTextField, self.cyanTextField, self.magentaTextField, self.yellowTextField, nil];
 	self.lagerPaperValues = [NSArray arrayWithObjects:@"<10", @"10-20", @"20+", nil];
 	self.printerPaperValues = [NSArray arrayWithObjects:@"0", @"<2", @"2-4", @"5-20", @"20+", nil];
 	self.lagerTonerValues = [NSArray arrayWithObjects:@"0", @"<2", @"2-4", @"5-20", @"20+", nil];
+	self.printerTonerValues = [NSMutableArray arrayWithObjects:@"<10%", @"10-20%", @">20%", nil];
+	/*
 	self.printerTonerValues = [[NSMutableArray alloc] init];
 	for (int i = 0; i<101; i++) {
 		[self.printerTonerValues addObject:[NSString stringWithFormat:@"%i%%", i]];
-	}
+	}*/
 }
 
 #pragma mark Picker View Methods
@@ -175,7 +179,7 @@
 {
 	self.selectedTextField = textField;
 	
-	if (self.lager) {
+	if (self.storageUnit) {
 		if (textField == self.A4TextField || textField == self.A3TextField){
 			self.currentArray = self.lagerPaperValues;
 			[self.picker reloadAllComponents];
@@ -255,11 +259,12 @@
 {
 	NSString *def;
 	NSString *def2;
-	if (self.lager){
+	if (self.storageUnit){
 		def = [self.lagerTonerValues objectAtIndex:2];
 		def2 = [self.lagerPaperValues objectAtIndex:2];
 	}else{
-		def = @"50%";
+		//def = @"50%";
+		def = [self.printerTonerValues objectAtIndex:2];
 		def2 = [self.printerPaperValues objectAtIndex:2];
 	}
 	
@@ -292,7 +297,7 @@
 -(void)setUpTextFields
 {
 	for (UITextField *textField in self.textFields){
-		if (self.lager){
+		if (self.storageUnit){
 			textField.delegate = self;
 			textField.inputView = self.picker;
 			textField.inputAccessoryView = self.inputAccessoryToolbar;
@@ -328,9 +333,9 @@
 		self.commentTextView.text = @"Alt OK!";
 	}
 	
-	if (self.lager){
-		self.kortleserSwitch.hidden = YES;
-		self.kortleserLabel.hidden = YES;
+	if (self.storageUnit){
+		self.cardReaderSwitch.hidden = YES;
+		self.cardReaderLabel.hidden = YES;
 		
 		if (!self.A3){
 			self.A3Label.hidden = YES;
@@ -338,14 +343,14 @@
 		}
 		
 	}else{
-		if (!self.kortleser){
-			self.kortleserSwitch.hidden = YES;
-			self.kortleserLabel.hidden = YES;
+		if (!self.cardReader){
+			self.cardReaderSwitch.hidden = YES;
+			self.cardReaderLabel.hidden = YES;
 		}
-		if (!self.svart) {
+		if (!self.black) {
 			self.blackTextField.hidden = YES;
 		}
-		if (!self.farge) {
+		if (!self.color) {
 			if (self.room.xero){
 				self.cyanLabel.text = @"Xerographic module";
 			}else{
@@ -405,7 +410,7 @@
 {
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	NSString *prosent = @"";
-	if (!self.lager){
+	if (!self.storageUnit){
 		prosent = @"%";
 	}
 	
@@ -415,11 +420,11 @@
 	if (self.A4){
 		self.A4TextField.text = ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_A4", self.name]]);
 	}
-	if (self.svart){
+	if (self.black){
 		self.blackTextField.text = [NSString stringWithFormat: @"%@%@", ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_black", self.name]]), prosent];
 	}
-	if (self.kortleser){
-		self.kortleserSwitch.on = [((NSNumber *)[defaults objectForKey:[NSString stringWithFormat:@"%@_kortleser", self.name]]) boolValue];
+	if (self.cardReader){
+		self.cardReaderSwitch.on = [((NSNumber *)[defaults objectForKey:[NSString stringWithFormat:@"%@_kortleser", self.name]]) boolValue];
 	}
 	
 	if ([self.room.name isEqualToString:@"Real. Bib."]) {
@@ -430,7 +435,7 @@
 		self.A3TextField.text = ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_A3", self.name]]);
 	}
 	
-	if (self.farge) {
+	if (self.color) {
 		self.cyanTextField.text = [NSString stringWithFormat: @"%@%@", ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_cyan", self.name]]), prosent];
 		
 		self.magentaTextField.text = [NSString stringWithFormat: @"%@%@", ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_magenta", self.name]]), prosent];
@@ -454,8 +459,8 @@
 {
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	[defaults setObject:[NSDate date] forKey:[NSString stringWithFormat: @"%@_date", self.name]];
-	if (self.kortleser){
-		[defaults setObject:[NSNumber numberWithBool:self.kortleserSwitch.on] forKey:[NSString stringWithFormat: @"%@_kortleser", self.name]];
+	if (self.cardReader){
+		[defaults setObject:[NSNumber numberWithBool:self.cardReaderSwitch.on] forKey:[NSString stringWithFormat: @"%@_kortleser", self.name]];
 	}
 	if ([self.room.name isEqualToString:@"Real. Bib."]) {
 		[defaults setObject:[NSNumber numberWithBool:self.extraSwitch.on] forKey:[NSString stringWithFormat: @"%@_extra", self.name]];
@@ -466,10 +471,10 @@
 	if (self.A4){
 		[defaults setObject:self.A4TextField.text forKey:[NSString stringWithFormat: @"%@_A4", self.name]];
 	}
-	if (self.svart){
+	if (self.black){
 		[defaults setObject:[self.blackTextField.text stringByReplacingOccurrencesOfString:@"%" withString:@""] forKey:[NSString stringWithFormat: @"%@_black", self.name]];
 	}
-	if (self.farge){
+	if (self.color){
 		[defaults setObject:[self.cyanTextField.text stringByReplacingOccurrencesOfString:@"%" withString:@""] forKey:[NSString stringWithFormat: @"%@_cyan", self.name]];
 		[defaults setObject:[self.magentaTextField.text stringByReplacingOccurrencesOfString:@"%" withString:@""] forKey:[NSString stringWithFormat: @"%@_magenta", self.name]];
 		[defaults setObject:[self.yellowTextField.text stringByReplacingOccurrencesOfString:@"%" withString:@""] forKey:[NSString stringWithFormat: @"%@_yellow", self.name]];
@@ -505,13 +510,25 @@
 	}
 }
 
--(void)setUpWithAutoLayout
+-(NSDictionary*)createDictionaryForAL
 {
-	// generate objects
-	NSDictionary *labelDictionary = @{@0 : @"Svart", @1 : @"Cyan", @2 : @"Magenta", @3 : @"Yellow", @10 : @"Kort", @12 : @"Op", @12 : @"A4@!!!!!!!!!!!!!!", @13 : @"A3"};
+	NSDictionary *labelDictionary = [[NSDictionary alloc] init];
 	
+	int count = 0;
+	
+	//[labelDictionary setValue:@"Svart" forKey:[NSNumber numberWithInt:count]];
+	
+	
+	
+	return @{@0 : @"Svart", @1 : @"Cyan", @2 : @"Magenta", @3 : @"Yellow", @4 : @"Kort", @5 : @"Op", @6 : @"A4", @7 : @"A3"};
+}
+
+-(void)setUpWithAutoLayout:(NSDictionary*)labelDictionary
+{
 	NSArray* labels = [self genLabelsFromDic:labelDictionary];
 	NSArray *fields = [self genFieldsFromDic:labelDictionary];
+	
+	[self connectFields:fields AndLabels:labels AndLabelDic:labelDictionary];
 	
 	UILabel *commentLabel = [UILabel new];
 	commentLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -520,16 +537,17 @@
 	
 	UITextView *commentField = [UITextView new];
 	commentField.translatesAutoresizingMaskIntoConstraints = NO;
-	commentField.layer.borderWidth = 2.0f;
-	commentField.layer.borderColor = [[UIColor grayColor] CGColor];
+	[self.view addSubview:commentField];
+	self.commentTextView = commentField;
 	
 	// generate autolayout
 	
 	NSDictionary *metrics = @{@"offsetTop" : @20,
-							  @"offsetLabels" : @25,
-							  @"offsetFields" : @16,
-							  @"leftMargin" : @12,
-							  @"horizontalOffset" : @12};
+							  @"commentWidth" : [NSNumber numberWithInt: self.view.frame.size.width-24],
+							  @"horizontalOffset" : @12,
+							  @"offsetLF" : @5,
+							  @"offsetFL" : @12,
+							  @"gap": @80};
 	
 	NSDictionary *v_dic = @{@"labels0" : labels[0],
 							@"labels1" : labels[1],
@@ -554,112 +572,97 @@
 							@"commentLabel" : commentLabel,
 							@"commentField" : commentField,
 							
-							@"top" : self.topLayoutGuide};
+							@"top" : self.topLayoutGuide,
+							@"bottom" : self.bottomLayoutGuide};
 	
-	NSArray *column1 = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[top]-offsetTop-[labels0]-offsetLabels-[labels1]-offsetLabels-[labels2]-offsetLabels-[labels3]"
+	NSArray *column1 = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[top]-offsetTop-[labels0]-offsetLF-[fields0]-offsetFL-[labels1]-offsetLF-[fields1]-offsetFL-[labels2]-offsetLF-[fields2]-offsetFL-[labels3]-offsetLF-[fields3]-offsetFL-[commentLabel]-offsetLF-[commentField]-[bottom]"
 															   options:0
 															   metrics:metrics
 																 views:v_dic];
-	
-	NSArray *column2 = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[top]-offsetTop-[fields0]-offsetFields-[fields1]-offsetFields-[fields2]-offsetFields-[fields3]"
-															   options:0
-															   metrics:metrics
-																 views:v_dic];
-	
-	NSArray *column3 = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[top]-offsetTop-[labels10]-offsetLabels-[labels11]-offsetLabels-[labels12]-offsetLabels-[labels13]"
-															   options:0
-															   metrics:metrics
-																 views:v_dic];
-	
-	NSArray *column4 = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[top]-offsetTop-[fields10]-offsetFields-[fields11]-offsetFields-[fields12]-offsetFields-[fields13]"
-															   options:0
-															   metrics:metrics
-																 views:v_dic];
-	
-	NSArray *row1 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-leftMargin-[labels0]-horizontalOffset-[fields0(60)]-horizontalOffset-[labels10]-horizontalOffset-[fields10(60)]"
-															options:NSLayoutFormatDirectionLeftToRight
-															metrics:metrics
-															  views:v_dic];
-	
-	NSArray *row2 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-leftMargin-[labels1]-horizontalOffset-[fields1(60)]-horizontalOffset-[labels11]-horizontalOffset-[fields11(60)]"
-															options:NSLayoutFormatDirectionLeftToRight
-															metrics:metrics
-															  views:v_dic];
-	
-	NSArray *row3 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-leftMargin-[labels2]-horizontalOffset-[fields2(60)]-horizontalOffset-[labels12]-horizontalOffset-[fields12(60)]"
-															options:NSLayoutFormatDirectionLeftToRight
-															metrics:metrics
-															  views:v_dic];
-	
-	NSArray *row4 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-leftMargin-[labels3]-horizontalOffset-[fields3(60)]-horizontalOffset-[labels13]-horizontalOffset-[fields13(60)]"
-															options:NSLayoutFormatDirectionLeftToRight
-															metrics:metrics
-															  views:v_dic];
-	
 	[self.view addConstraints:column1];
+	
+	NSArray *column2 = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|[top]-offsetTop-[labels10]-offsetLF-[fields10]-offsetFL-[labels11]-offsetLF-[fields11]-offsetFL-[labels12]-offsetLF-[fields12]-offsetFL-[labels13]-offsetLF-[fields13]"
+															   options:NSLayoutFormatAlignAllLeading
+															   metrics:metrics
+																 views:v_dic];
 	[self.view addConstraints:column2];
-	[self.view addConstraints:column3];
-	[self.view addConstraints:column4];
+	
+	NSArray *row1 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[labels0]-gap-[labels10]"
+															options:0
+															metrics:metrics
+															  views:v_dic];
 	[self.view addConstraints:row1];
+	
+	NSArray *row2 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[labels1]-gap-[labels11]"
+															options:0
+															metrics:metrics
+															  views:v_dic];
 	[self.view addConstraints:row2];
+	
+	NSArray *row3 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[labels2]-gap-[labels12]"
+															options:0
+															metrics:metrics
+															  views:v_dic];
 	[self.view addConstraints:row3];
+	
+	NSArray *row4 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[labels3]-gap-[labels13]"
+															options:0
+															metrics:metrics
+															  views:v_dic];
 	[self.view addConstraints:row4];
 	
 	
-	/*
-	NSArray *labels_VC = [NSLayoutConstraint
-							constraintsWithVisualFormat:@"V:|[top]-offsetTop-[labels0]-offsetLabels-[labels1]-offsetLabels-[labels2]-offsetLabels-[labels3]-offsetLabels-[labels4]-offsetLabels-[labels5]"
-							options:0
-							metrics:@{@"offsetTop": @20, @"offsetLabels" : @25}
-							views:v_dic];
+	NSArray *row11 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[fields0(80)]-gap-[fields10(80)]"
+															options:0
+															metrics:metrics
+															  views:v_dic];
+	
+	[self.view addConstraints:row11];
+	
+	NSArray *row12 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[fields1(80)]-gap-[fields11(80)]"
+															options:0
+															metrics:metrics
+															  views:v_dic];
+	[self.view addConstraints:row12];
+	
+	NSArray *row13 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[fields2(80)]-gap-[fields12(80)]"
+															options:0
+															metrics:metrics
+															  views:v_dic];
+	[self.view addConstraints:row13];
+	
+	NSArray *row14 = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-gap-[fields3(80)]-gap-[fields13(80)]"
+															options:0
+															metrics:metrics
+															  views:v_dic];
+	[self.view addConstraints:row14];
+	
+	NSArray *rowCL = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-horizontalOffset-[commentLabel]"
+															options:0
+															metrics:metrics
+															  views:v_dic];
+	[self.view addConstraints:rowCL];
+	
+	NSArray *rowC = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-horizontalOffset-[commentField(commentWidth)]"
+															 options:0
+															 metrics:metrics
+															   views:v_dic];
+	[self.view addConstraints:rowC];
+	
+	
+}
 
-	[self.view addConstraints:labels_VC];
+-(void)connectFields:(NSArray *)fields AndLabels: (NSArray *)labels AndLabelDic: (NSDictionary *)dic
+{
+
+	if (self.black){
+		self.blackLabel = labels[0];
+		self.blackTextField = fields[0];
+	}
+	if (self.color){
+		//self.cyanLabel =
+	}
 	
-	NSArray *fields_VC = [NSLayoutConstraint
-						  constraintsWithVisualFormat:@"V:|[top]-offsetTop-[fields0(30)]-offsetLabels-[fields1(30)]-offsetLabels-[fields2(30)]-offsetLabels-[fields3(30)]-offsetLabels-[fields4(30)]-offsetLabels-[fields5(30)]"
-						  options:NSLayoutFormatAlignAllRight
-						  metrics:@{@"offsetTop": @20, @"offsetLabels" : @16}
-						  views:v_dic];
-	
-	[self.view addConstraints:fields_VC];
-	
-	NSArray *switches_VC = [NSLayoutConstraint
-						  constraintsWithVisualFormat:@"V:|[top]-offsetTop-[switch0(30)]"
-						  options:0
-						  metrics:@{@"offsetTop": @20, @"offsetLabels" : @16}
-						  views:v_dic];
-	
-	[self.view addConstraints:switches_VC];
-	
-	for (UILabel *l in labels){
-		int i = [labels indexOfObject:l];
-		NSString *s;
-		if (i == 0){
-			s = [NSString stringWithFormat:@"H:|-12-[labels%i][spacer1][fields%i(60)][spacer2(==spacer1)][switch0(60)]", i, i];
-		}else{
-			s = [NSString stringWithFormat:@"H:|-12-[labels%i]-25-[fields%i(60)]", i, i];
-		}
-		
-		
-		NSArray *label_HC = [NSLayoutConstraint
-							  constraintsWithVisualFormat:s
-							  options:NSLayoutFormatAlignAllCenterY
-							  metrics:nil
-							  views:v_dic];
-	
-		[self.view addConstraints:label_HC];
-		
-		s = [NSString stringWithFormat:@"H:[fields%i(60)]", [labels indexOfObject:l]];
-		*/
-		/*NSArray *field_HC = [NSLayoutConstraint
-							 constraintsWithVisualFormat:s
-							 options:0
-							 metrics:nil
-							 views:v_dic];
-		
-		[self.view addConstraints:field_HC];*/
-	
-	//}
 }
 
 -(NSArray*)genLabelsFromDic: (NSDictionary *)labelDictionary
@@ -692,35 +695,27 @@
 	
 	UILabel *label10 = [UILabel new];
 	label10.translatesAutoresizingMaskIntoConstraints = NO;
-	label10.text = [labelDictionary objectForKey:@10];
+	label10.text = [labelDictionary objectForKey:@4];
 	[self.view addSubview:label10];
 	[array addObject:label10];
 	
 	UILabel *label11 = [UILabel new];
 	label11.translatesAutoresizingMaskIntoConstraints = NO;
-	label11.text = [labelDictionary objectForKey:@11];
+	label11.text = [labelDictionary objectForKey:@4];
 	[self.view addSubview:label11];
 	[array addObject:label11];
 	
 	UILabel *label12 = [UILabel new];
 	label12.translatesAutoresizingMaskIntoConstraints = NO;
-	label12.text = [labelDictionary objectForKey:@12];
+	label12.text = [labelDictionary objectForKey:@5];
 	[self.view addSubview:label12];
 	[array addObject:label12];
 	
 	UILabel *label13 = [UILabel new];
 	label13.translatesAutoresizingMaskIntoConstraints = NO;
-	label13.text = [labelDictionary objectForKey:@13];
+	label13.text = [labelDictionary objectForKey:@6];
 	[self.view addSubview:label13];
 	[array addObject:label13];
-	
-	for (int i = 0; i<8; i++){
-		UILabel *currentLabel = [array objectAtIndex:i];
-		if ([currentLabel.text isEqualToString:@"nil"]){
-			currentLabel.hidden = YES;
-		}
-	
-	}
 	
 	return array;
 }
