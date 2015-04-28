@@ -45,6 +45,10 @@
 	}
 }
 
+-(void)viewWillAppear:(BOOL)animated
+{
+	[self.tableView reloadData];
+}
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -62,7 +66,6 @@
     return 0;
 }
 
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	
 	static NSString *cellIdentifier = @"RoomCell";
@@ -74,12 +77,24 @@
 		cell = [self.tableView dequeueReusableCellWithIdentifier:cellIdentifier];
 	}
 	
+	NSArray *rooms;
 	if ([self.location isEqualToString:@"Skranke"]){
 		cell.roomLabel.text = [self.nh getSkrankeLabelForIndex:indexPath.row];
+		rooms = [self.nh getSkrankeRooms];
 	}else if ([self.location isEqualToString:@"Delphi"]){
 		cell.roomLabel.text = [self.nh getDelphiLabelForIndex:indexPath.row];
+		rooms = [self.nh getDelphiRooms];
 	}
-    
+	
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"colors"] boolValue]){
+		NSDate *savedDate = [[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@_date", ((Room *)[rooms objectAtIndex:indexPath.row]).name]];
+		NSLog(@"Room: %@, Interval: %f", ((Room *)[rooms objectAtIndex:indexPath.row]).name, [savedDate timeIntervalSinceNow]);
+		if (!savedDate || [savedDate timeIntervalSinceNow] <= -86400){
+			cell.backgroundColor = [UIColor colorWithRed:0.95 green:0.33 blue:0.26 alpha:0.7];
+		}else{
+			cell.backgroundColor = [UIColor colorWithRed:0.36 green:0.98 blue:0.24 alpha: 0.5];
+		}
+	}
     return cell;
 }
 
@@ -113,7 +128,7 @@
 	for (int i = 0; i < [rooms count]; i++) {
 		NSDate *savedDate = [[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@_date", ((Room *)[rooms objectAtIndex:i]).name]];
 		
-		if (savedDate == nil || [savedDate timeIntervalSinceNow] >= 86400){
+		if (savedDate == nil || [savedDate timeIntervalSinceNow] <= -86400){
 			self.nameOfRoomThatGeneratedError = ((Room *)[rooms objectAtIndex:i]).name;
 			return false;
 		}

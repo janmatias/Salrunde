@@ -16,6 +16,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *recipientErrorLabel;
 @property (weak, nonatomic) IBOutlet UITextField *recipientTextField;
 
+@property (weak, nonatomic) IBOutlet UISwitch *colorSwitch;
+
 @property (weak, nonatomic) IBOutlet UITextView *attributionTextView;
 
 @property (strong, nonatomic) NetworkHandler *nh;
@@ -45,6 +47,13 @@
 	
 	[self updateUIAccordingToEmail];
 	
+	// Setting switch
+	if ([[defaults objectForKey:@"colors"] boolValue]){
+		self.colorSwitch.on = YES;
+	}else{
+		self.colorSwitch.on = NO;
+	}
+	
 	// Setting some properties
 	self.nh = ((MyNavController *)self.navigationController).nh;
 	self.delphi = [self.nh getDelphiRooms];
@@ -54,13 +63,15 @@
 	NSString * htmlString = @"<div>App icon made by <a href=\"http://www.simpleicon.com\" title=\"SimpleIcon\">SimpleIcon</a> from <a href=\"http://www.flaticon.com\" title=\"Flaticon\">www.flaticon.com</a> is licensed under <a href=\"http://creativecommons.org/licenses/by/3.0/\" title=\"Creative Commons BY 3.0\">CC BY 3.0</a></div>";
 	NSAttributedString * attrStr = [[NSAttributedString alloc] initWithData:[htmlString dataUsingEncoding:NSUnicodeStringEncoding] options:@{ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType } documentAttributes:nil error:nil];
 	self.attributionTextView.attributedText = attrStr;
+	self.attributionTextView.backgroundColor = [UIColor whiteColor];
 }
 
 -(BOOL)save
 {
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	
 	NSString *email = self.recipientTextField.text;
-	if ([self IsValidEmail:email]){
-		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	if ([self IsValidEmail:email] || [email isEqualToString:@""]){
 		[defaults setObject:self.recipientTextField.text forKey:@"defaultRecipient"];
 		[defaults synchronize];
 		return YES;
@@ -111,7 +122,15 @@
 {
 	// Automatically save email on back button pressed
 	if ([viewController isKindOfClass:[MainViewController class]]){
+		NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
 		[self save];
+		if (self.colorSwitch.on){
+			[def setValue:[NSNumber numberWithBool:YES] forKey:@"colors"];
+			[def synchronize];
+		}else{
+			[def setValue:[NSNumber numberWithBool:NO] forKey:@"colors"];
+			[def synchronize];
+		}
 		self.navigationController.delegate = nil;
 	}
 }

@@ -86,7 +86,7 @@
 	
 	[self iterateOverOptions]; // Hide the correct fields according to what the printer has
 	
-	[self setTextFields]; // Sets default text in the text fields
+	[self fillTextFields]; // Sets default text in the text fields
 	[self syncWithUserDefaults]; // Sets last saved data in the fields
 }
 
@@ -241,39 +241,37 @@
 
 #pragma mark Helping Methods
 
--(void)setTextFields
+-(void)fillTextFields
 {
-	NSString *def;
-	NSString *def2;
+	NSString *toner;
+	NSString *paper;
 	if (self.storageUnit){
-		def = [self.lagerTonerValues objectAtIndex:2];
-		def2 = [self.lagerPaperValues objectAtIndex:2];
+		toner = [self.lagerTonerValues objectAtIndex:2];
+		paper = [self.lagerPaperValues objectAtIndex:2];
 	}else{
-		//def = @"50%";
-		def = [self.printerTonerValues objectAtIndex:2];
-		def2 = [self.printerPaperValues objectAtIndex:2];
+		toner = [self.printerTonerValues objectAtIndex:2];
+		paper = [self.printerPaperValues objectAtIndex:2];
 	}
 	
 	if ([self.blackTextField.text  isEqual: @""]){
-		self.blackTextField.text = def;
+		self.blackTextField.text = toner;
 	}
 	if ([self.cyanTextField.text  isEqual: @""]){
-		self.cyanTextField.text = def;
+		self.cyanTextField.text = toner;
 	}
 	if ([self.magentaTextField.text  isEqual: @""]){
-		self.magentaTextField.text = def;
+		self.magentaTextField.text = toner;
 	}
 	if ([self.yellowTextField.text  isEqual: @""]){
-		self.yellowTextField.text = def;
+		self.yellowTextField.text = toner;
 	}
 	if ([self.A4TextField.text  isEqual: @""]){
-		self.A4TextField.text = def2;
+		self.A4TextField.text = paper;
 	}
 	if ([self.A3TextField.text  isEqual: @""]){
-		self.A3TextField.text = def2;
+		self.A3TextField.text = paper;
 	}
 }
-
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
@@ -422,7 +420,10 @@
 		self.A4TextField.text = ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_A4", self.name]]);
 	}
 	if (self.black){
+		self.blackTextField.text = [defaults objectForKey:[NSString stringWithFormat: @"%@_black", self.name]];
+		/*
 		self.blackTextField.text = [NSString stringWithFormat: @"%@%@", ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_black", self.name]]), prosent];
+		 */
 	}
 	if (self.cardReader){
 		self.cardReaderSwitch.on = [((NSNumber *)[defaults objectForKey:[NSString stringWithFormat:@"%@_kortleser", self.name]]) boolValue];
@@ -437,11 +438,16 @@
 	}
 	
 	if (self.color) {
+		self.cyanTextField.text = [defaults objectForKey:[NSString stringWithFormat: @"%@_cyan", self.name]];
+		self.magentaTextField.text = [defaults objectForKey:[NSString stringWithFormat: @"%@_magenta", self.name]];
+		self.yellowTextField.text = [defaults objectForKey:[NSString stringWithFormat: @"%@_yellow", self.name]];
+		/*
 		self.cyanTextField.text = [NSString stringWithFormat: @"%@%@", ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_cyan", self.name]]), prosent];
 		
 		self.magentaTextField.text = [NSString stringWithFormat: @"%@%@", ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_magenta", self.name]]), prosent];
 		
 		self.yellowTextField.text = [NSString stringWithFormat: @"%@%@", ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_yellow", self.name]]), prosent];
+		 */
 	}else{
 		if (self.room.xero){
 			self.cyanTextField.text = [NSString stringWithFormat: @"%@%@", ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_xero", self.name]]), prosent];
@@ -451,7 +457,7 @@
 		}
 	}
 	// if comment added less than a day ago
-	if ( [[NSDate date] timeIntervalSinceDate:((NSDate *)[defaults objectForKey:[NSString stringWithFormat:@"%@_date", self.name]])] < 86400){
+	if ( [[NSDate date] timeIntervalSinceDate:((NSDate *)[defaults objectForKey:[NSString stringWithFormat:@"%@_date", self.name]])] > -86400){
 		self.commentTextView.text = [defaults objectForKey:[NSString stringWithFormat:@"%@_kommentar", self.name]];
 	}
 }
@@ -460,6 +466,7 @@
 {
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	[defaults setObject:[NSDate date] forKey:[NSString stringWithFormat: @"%@_date", self.name]];
+	NSLog(@"date: %@", [NSDate date]);
 	if (self.cardReader){
 		[defaults setObject:[NSNumber numberWithBool:self.cardReaderSwitch.on] forKey:[NSString stringWithFormat: @"%@_kortleser", self.name]];
 	}
@@ -473,12 +480,20 @@
 		[defaults setObject:self.A4TextField.text forKey:[NSString stringWithFormat: @"%@_A4", self.name]];
 	}
 	if (self.black){
+		[defaults setObject:self.blackTextField.text forKey:[NSString stringWithFormat: @"%@_black", self.name]];
+		/*
 		[defaults setObject:[self.blackTextField.text stringByReplacingOccurrencesOfString:@"%" withString:@""] forKey:[NSString stringWithFormat: @"%@_black", self.name]];
+		 */
 	}
 	if (self.color){
+		[defaults setObject:self.cyanTextField.text forKey:[NSString stringWithFormat: @"%@_cyan", self.name]];
+		[defaults setObject:self.magentaTextField.text forKey:[NSString stringWithFormat: @"%@_magenta", self.name]];
+		[defaults setObject:self.yellowTextField.text forKey:[NSString stringWithFormat: @"%@_yellow", self.name]];
+		/*
 		[defaults setObject:[self.cyanTextField.text stringByReplacingOccurrencesOfString:@"%" withString:@""] forKey:[NSString stringWithFormat: @"%@_cyan", self.name]];
 		[defaults setObject:[self.magentaTextField.text stringByReplacingOccurrencesOfString:@"%" withString:@""] forKey:[NSString stringWithFormat: @"%@_magenta", self.name]];
 		[defaults setObject:[self.yellowTextField.text stringByReplacingOccurrencesOfString:@"%" withString:@""] forKey:[NSString stringWithFormat: @"%@_yellow", self.name]];
+		 */
 	}else{
 		if (self.room.xero){
 			[defaults setObject:[self.cyanTextField.text stringByReplacingOccurrencesOfString:@"%" withString:@""] forKey:[NSString stringWithFormat: @"%@_xero", self.name]];
