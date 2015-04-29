@@ -13,6 +13,7 @@
 #import "PrinterViewController.h"
 #import "Generator.h"
 #import "MapViewController.h"
+#import "Constants.h"
 
 @interface LocationTableViewController ()
 
@@ -47,6 +48,7 @@
 
 -(void)viewWillAppear:(BOOL)animated
 {
+	[self.navigationController setToolbarHidden:NO];
 	[self.tableView reloadData];
 }
 #pragma mark - Table view data source
@@ -86,9 +88,8 @@
 		rooms = [self.nh getDelphiRooms];
 	}
 	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"colors"] boolValue]){
-		NSDate *savedDate = [[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@_date", ((Room *)[rooms objectAtIndex:indexPath.row]).name]];
-		NSLog(@"Room: %@, Interval: %f", ((Room *)[rooms objectAtIndex:indexPath.row]).name, [savedDate timeIntervalSinceNow]);
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:kColorsKey] boolValue]){
+		NSDate *savedDate = [[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@_%@", ((Room *)[rooms objectAtIndex:indexPath.row]).name, kDateKey]];
 		if (!savedDate || [savedDate timeIntervalSinceNow] <= -86400){
 			cell.backgroundColor = [UIColor colorWithRed:0.95 green:0.33 blue:0.26 alpha:0.7];
 		}else{
@@ -126,7 +127,7 @@
 	}
 	
 	for (int i = 0; i < [rooms count]; i++) {
-		NSDate *savedDate = [[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@_date", ((Room *)[rooms objectAtIndex:i]).name]];
+		NSDate *savedDate = [[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@_%@", ((Room *)[rooms objectAtIndex:i]).name, kDateKey]];
 		
 		if (savedDate == nil || [savedDate timeIntervalSinceNow] <= -86400){
 			self.nameOfRoomThatGeneratedError = ((Room *)[rooms objectAtIndex:i]).name;
@@ -167,7 +168,7 @@
 		[mailer setSubject:[NSString stringWithFormat:@"%@Salrunde %@-%@-%@", startSubject, yearString, monthString, dayString]];
 		[mailer setMessageBody:contents isHTML:NO];
 		
-		NSString *rec = [[NSUserDefaults standardUserDefaults] objectForKey:@"defaultRecipient"];
+		NSString *rec = [[NSUserDefaults standardUserDefaults] objectForKey:kDefaultRecipientKey];
 		if (![rec isEqualToString:@""]){
 			[mailer setToRecipients:[NSArray arrayWithObjects:rec, nil]];
 		}

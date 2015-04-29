@@ -9,6 +9,7 @@
 #import "PrinterViewController.h"
 #import "LocationTableViewController.h"
 #import "MapViewController.h"
+#import "Constants.h"
 
 @interface PrinterViewController ()
 
@@ -52,8 +53,8 @@
 @property (nonatomic) BOOL A4;
 @property (nonatomic) BOOL storageUnit;
 
-@property (strong, nonatomic) NSArray *lagerTonerValues;
-@property (strong, nonatomic) NSArray *lagerPaperValues;
+@property (strong, nonatomic) NSArray *storageTonerValues;
+@property (strong, nonatomic) NSArray *storagePaperValues;
 @property (strong, nonatomic) NSArray *printerPaperValues;
 @property (strong, nonatomic) NSMutableArray *printerTonerValues;
 @property (strong, nonatomic) NSArray *textFields;
@@ -90,22 +91,27 @@
 	[self syncWithUserDefaults]; // Sets last saved data in the fields
 }
 
--(void)setProperties
+-(void)viewWillAppear:(BOOL)animated
 {
 	self.navigationController.delegate = self;
+	[self.navigationController setToolbarHidden:NO];
+}
+
+-(void)setProperties
+{
 	self.title = self.room.name;
 	
-	self.cardReader = self.room.kortleser;
-	self.color = self.room.farge;
-	self.black = self.room.svart;
+	self.cardReader = self.room.cardReader;
+	self.color = self.room.color;
+	self.black = self.room.black;
 	self.A3 = self.room.A3;
 	self.A4 = self.room.A4;
-	self.storageUnit = self.room.lager;
+	self.storageUnit = self.room.storage;
 	self.originalCenter = self.view.center;
 	self.textFields = [NSArray arrayWithObjects:self.A4TextField, self.A3TextField, self.blackTextField, self.cyanTextField, self.magentaTextField, self.yellowTextField, nil];
-	self.lagerPaperValues = [NSArray arrayWithObjects:@"<10", @"10-20", @"20+", nil];
+	self.storagePaperValues = [NSArray arrayWithObjects:@"<10", @"10-20", @"20+", nil];
 	self.printerPaperValues = [NSArray arrayWithObjects:@"0", @"<2", @"2-4", @"5-20", @"20+", nil];
-	self.lagerTonerValues = [NSArray arrayWithObjects:@"0", @"<2", @"2-4", @"5-20", @"20+", nil];
+	self.storageTonerValues = [NSArray arrayWithObjects:@"0", @"<2", @"2-4", @"5-20", @"20+", nil];
 	self.printerTonerValues = [NSMutableArray arrayWithObjects:@"<10%", @"10-20%", @">20%", nil];
 	/*
 	self.printerTonerValues = [[NSMutableArray alloc] init];
@@ -166,11 +172,11 @@
 	
 	if (self.storageUnit) {
 		if (textField == self.A4TextField || textField == self.A3TextField){
-			self.currentArray = self.lagerPaperValues;
+			self.currentArray = self.storagePaperValues;
 			[self.picker reloadAllComponents];
 			return YES;
 		}else{
-			self.currentArray = self.lagerTonerValues;
+			self.currentArray = self.storageTonerValues;
 			[self.picker reloadAllComponents];
 			return YES;
 		}
@@ -246,8 +252,8 @@
 	NSString *toner;
 	NSString *paper;
 	if (self.storageUnit){
-		toner = [self.lagerTonerValues objectAtIndex:2];
-		paper = [self.lagerPaperValues objectAtIndex:2];
+		toner = [self.storageTonerValues objectAtIndex:2];
+		paper = [self.storagePaperValues objectAtIndex:2];
 	}else{
 		toner = [self.printerTonerValues objectAtIndex:2];
 		paper = [self.printerPaperValues objectAtIndex:2];
@@ -311,13 +317,6 @@
 		[self.view layoutIfNeeded];
 	}
 	
-	if ([self.room.name isEqualToString:@"Real. Bib."]) {
-		self.extraLabel.text = @"reapub";
-		[self.extraLabel setHidden:NO];
-		[self.extraSwitch setHidden:NO];
-		self.extraSwitch.on = YES;
-	}
-	
 	if ([self.room.name isEqualToString:@"Sahara"] && [self.commentTextView.text isEqualToString:@""]){
 		self.commentTextView.text = @"Alt OK!";
 		self.commentLabelConstraint.constant = 12;
@@ -369,6 +368,27 @@
 			self.A4TextField.hidden = YES;
 		}
 	}
+	
+	if ([self.room.name isEqualToString:@"Real. Bib."]) {
+		self.extraLabel.text = @"reapub";
+		self.extraLabel.hidden = NO;
+		self.extraSwitch.hidden = NO;
+		self.extraSwitch.on = YES;
+		self.extraSwitch.enabled = YES;
+		
+		self.cyanLabel.hidden = NO;
+		self.cyanLabel.text = @"A4";
+		self.A4Label.hidden = YES;
+		
+		UITextField* tmpA4 = self.A4TextField;
+		self.A4TextField = self.cyanTextField;
+		self.cyanTextField = tmpA4;
+		
+		self.A4TextField.hidden = NO;
+		
+		self.commentLabelConstraint.constant -= 82;
+		[self.view layoutIfNeeded];
+	}
 }
 
 -(void)resignFirstResponders
@@ -395,14 +415,6 @@
 	[self performSegueWithIdentifier:@"showMap" sender:nil];
 }
 
--(void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
-{
-	if ([viewController isKindOfClass:[LocationTableViewController class]]){
-		[self save];
-		self.navigationController.delegate = nil;
-	}
-}
-
 #pragma mark Save/Load metods
 
 -(void)syncWithUserDefaults // load
@@ -413,101 +425,90 @@
 		prosent = @"%";
 	}
 	
-	if (![defaults objectForKey:[NSString stringWithFormat:@"%@_date", self.name]]){
+	if (![defaults objectForKey:[NSString stringWithFormat:@"%@_%@", self.name, kDateKey]]){
 		return;
 	}
 	if (self.A4){
-		self.A4TextField.text = ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_A4", self.name]]);
+		self.A4TextField.text = ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_%@", self.name, kA4Key]]);
 	}
 	if (self.black){
-		self.blackTextField.text = [defaults objectForKey:[NSString stringWithFormat: @"%@_black", self.name]];
-		/*
-		self.blackTextField.text = [NSString stringWithFormat: @"%@%@", ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_black", self.name]]), prosent];
-		 */
+		self.blackTextField.text = [defaults objectForKey:[NSString stringWithFormat: @"%@_%@", self.name, kBlackKey]];
 	}
 	if (self.cardReader){
-		self.cardReaderSwitch.on = [((NSNumber *)[defaults objectForKey:[NSString stringWithFormat:@"%@_kortleser", self.name]]) boolValue];
+		self.cardReaderSwitch.on = [((NSNumber *)[defaults objectForKey:[NSString stringWithFormat:@"%@_%@", self.name, kCardReaderKey]]) boolValue];
 	}
 	
 	if ([self.room.name isEqualToString:@"Real. Bib."]) {
-		self.extraSwitch.on = [((NSNumber *)[defaults objectForKey:[NSString stringWithFormat:@"%@_extra", self.name]]) boolValue];
+		self.extraSwitch.on = [((NSNumber *)[defaults objectForKey:[NSString stringWithFormat:@"%@_%@", self.name, kExtraKey]]) boolValue];
 	}
 	
 	if (self.A3){
-		self.A3TextField.text = ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_A3", self.name]]);
+		self.A3TextField.text = ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_%@", self.name, kA3Key]]);
 	}
 	
 	if (self.color) {
-		self.cyanTextField.text = [defaults objectForKey:[NSString stringWithFormat: @"%@_cyan", self.name]];
-		self.magentaTextField.text = [defaults objectForKey:[NSString stringWithFormat: @"%@_magenta", self.name]];
-		self.yellowTextField.text = [defaults objectForKey:[NSString stringWithFormat: @"%@_yellow", self.name]];
-		/*
-		self.cyanTextField.text = [NSString stringWithFormat: @"%@%@", ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_cyan", self.name]]), prosent];
-		
-		self.magentaTextField.text = [NSString stringWithFormat: @"%@%@", ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_magenta", self.name]]), prosent];
-		
-		self.yellowTextField.text = [NSString stringWithFormat: @"%@%@", ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_yellow", self.name]]), prosent];
-		 */
+		self.cyanTextField.text = [defaults objectForKey:[NSString stringWithFormat: @"%@_%@", self.name, kCyanKey]];
+		self.magentaTextField.text = [defaults objectForKey:[NSString stringWithFormat: @"%@_%@", self.name, kMagentaKey]];
+		self.yellowTextField.text = [defaults objectForKey:[NSString stringWithFormat: @"%@_%@", self.name, kYellowKey]];
 	}else{
 		if (self.room.xero){
-			self.cyanTextField.text = [NSString stringWithFormat: @"%@%@", ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_xero", self.name]]), prosent];
+			self.cyanTextField.text = [defaults objectForKey:[NSString stringWithFormat: @"%@_%@", self.name, kXerographicModuleKey]];
 		}
 		if (self.room.fuser){
-			self.magentaTextField.text = [NSString stringWithFormat: @"%@%@", ((NSString *)[defaults objectForKey:[NSString stringWithFormat:@"%@_fuser", self.name]]), prosent];
+			self.magentaTextField.text = [defaults objectForKey:[NSString stringWithFormat: @"%@_%@", self.name, kFuserModuleKey]];
 		}
 	}
 	// if comment added less than a day ago
-	if ( [[NSDate date] timeIntervalSinceDate:((NSDate *)[defaults objectForKey:[NSString stringWithFormat:@"%@_date", self.name]])] > -86400){
-		self.commentTextView.text = [defaults objectForKey:[NSString stringWithFormat:@"%@_kommentar", self.name]];
+	if ( [[NSDate date] timeIntervalSinceDate:((NSDate *)[defaults objectForKey:[NSString stringWithFormat:@"%@_%@", self.name, kDateKey]])] > -86400){
+		self.commentTextView.text = [defaults objectForKey:[NSString stringWithFormat:@"%@_%@", self.name, kCommentKey]];
 	}
 }
 
 -(void)save
 {
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-	[defaults setObject:[NSDate date] forKey:[NSString stringWithFormat: @"%@_date", self.name]];
-	NSLog(@"date: %@", [NSDate date]);
+	[defaults setObject:[NSDate date] forKey:[NSString stringWithFormat: @"%@_%@", self.name, kDateKey]];
 	if (self.cardReader){
-		[defaults setObject:[NSNumber numberWithBool:self.cardReaderSwitch.on] forKey:[NSString stringWithFormat: @"%@_kortleser", self.name]];
+		[defaults setObject:[NSNumber numberWithBool:self.cardReaderSwitch.on] forKey:[NSString stringWithFormat: @"%@_%@", self.name, kCardReaderKey]];
 	}
 	if ([self.room.name isEqualToString:@"Real. Bib."]) {
-		[defaults setObject:[NSNumber numberWithBool:self.extraSwitch.on] forKey:[NSString stringWithFormat: @"%@_extra", self.name]];
+		[defaults setObject:[NSNumber numberWithBool:self.extraSwitch.on] forKey:[NSString stringWithFormat: @"%@_%@", self.name, kExtraKey]];
 	}
 	if (self.A3) {
-		[defaults setObject:self.A3TextField.text forKey:[NSString stringWithFormat: @"%@_A3", self.name]];
+		[defaults setObject:self.A3TextField.text forKey:[NSString stringWithFormat: @"%@_%@", self.name, kA3Key]];
 	}
 	if (self.A4){
-		[defaults setObject:self.A4TextField.text forKey:[NSString stringWithFormat: @"%@_A4", self.name]];
+		[defaults setObject:self.A4TextField.text forKey:[NSString stringWithFormat: @"%@_%@", self.name, kA4Key]];
 	}
 	if (self.black){
-		[defaults setObject:self.blackTextField.text forKey:[NSString stringWithFormat: @"%@_black", self.name]];
-		/*
-		[defaults setObject:[self.blackTextField.text stringByReplacingOccurrencesOfString:@"%" withString:@""] forKey:[NSString stringWithFormat: @"%@_black", self.name]];
-		 */
+		[defaults setObject:self.blackTextField.text forKey:[NSString stringWithFormat: @"%@_%@", self.name, kBlackKey]];
 	}
 	if (self.color){
-		[defaults setObject:self.cyanTextField.text forKey:[NSString stringWithFormat: @"%@_cyan", self.name]];
-		[defaults setObject:self.magentaTextField.text forKey:[NSString stringWithFormat: @"%@_magenta", self.name]];
-		[defaults setObject:self.yellowTextField.text forKey:[NSString stringWithFormat: @"%@_yellow", self.name]];
-		/*
-		[defaults setObject:[self.cyanTextField.text stringByReplacingOccurrencesOfString:@"%" withString:@""] forKey:[NSString stringWithFormat: @"%@_cyan", self.name]];
-		[defaults setObject:[self.magentaTextField.text stringByReplacingOccurrencesOfString:@"%" withString:@""] forKey:[NSString stringWithFormat: @"%@_magenta", self.name]];
-		[defaults setObject:[self.yellowTextField.text stringByReplacingOccurrencesOfString:@"%" withString:@""] forKey:[NSString stringWithFormat: @"%@_yellow", self.name]];
-		 */
+		[defaults setObject:self.cyanTextField.text forKey:[NSString stringWithFormat: @"%@_%@", self.name, kCyanKey]];
+		[defaults setObject:self.magentaTextField.text forKey:[NSString stringWithFormat: @"%@_%@", self.name, kMagentaKey]];
+		[defaults setObject:self.yellowTextField.text forKey:[NSString stringWithFormat: @"%@_%@", self.name, kYellowKey]];
 	}else{
 		if (self.room.xero){
-			[defaults setObject:[self.cyanTextField.text stringByReplacingOccurrencesOfString:@"%" withString:@""] forKey:[NSString stringWithFormat: @"%@_xero", self.name]];
+			[defaults setObject:self.cyanTextField.text forKey:[NSString stringWithFormat: @"%@_%@", self.name, kXerographicModuleKey]];
 		}
 		if (self.room.fuser){
-			[defaults setObject:[self.magentaTextField.text stringByReplacingOccurrencesOfString:@"%" withString:@""] forKey:[NSString stringWithFormat: @"%@_fuser", self.name]];
+			[defaults setObject:self.magentaTextField.text forKey:[NSString stringWithFormat: @"%@_%@", self.name, kFuserModuleKey]];
 		}
 	}
 	
-	[defaults setObject:self.commentTextView.text forKey:[NSString stringWithFormat: @"%@_kommentar", self.name]];
+	[defaults setObject:self.commentTextView.text forKey:[NSString stringWithFormat: @"%@_%@", self.name, kCommentKey]];
 	
 	[defaults synchronize];
 	NSLog(@"Saved room: %@", self.room.name);
 	
+}
+
+-(void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+	if (![viewController isKindOfClass:[self class]]){
+		self.navigationController.delegate = nil;
+		[self save];
+	}
 }
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender

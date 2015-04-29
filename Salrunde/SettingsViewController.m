@@ -9,8 +9,11 @@
 #import "SettingsViewController.h"
 #import "MyNavController.h"
 #import "MainViewController.h"
+#import "Constants.h"
 
 @interface SettingsViewController ()
+
+@property (weak, nonatomic) IBOutlet UILabel *versionLabel;
 
 @property (weak, nonatomic) IBOutlet UILabel *recipientLabel;
 @property (weak, nonatomic) IBOutlet UILabel *recipientErrorLabel;
@@ -32,6 +35,8 @@
 {
     [super viewDidLoad];
 	
+	self.versionLabel.text = [NSString stringWithFormat:@"Versjon: %.1f", VERSION];
+	
 	// Setting delegates
 	self.recipientTextField.delegate = self;
 	self.navigationController.delegate = self;
@@ -41,14 +46,14 @@
 	
 	// Filling text field with saved email, if there is one
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-	if (![((NSString *)[defaults objectForKey:@"defaultRecipient"]) isEqualToString:@""]){
-		self.recipientTextField.text = [defaults objectForKey:@"defaultRecipient"];
+	if (![((NSString *)[defaults objectForKey:kDefaultRecipientKey]) isEqualToString:@""]){
+		self.recipientTextField.text = [defaults objectForKey:kDefaultRecipientKey];
 	}
 	
 	[self updateUIAccordingToEmail];
 	
 	// Setting switch
-	if ([[defaults objectForKey:@"colors"] boolValue]){
+	if ([[defaults objectForKey:kColorsKey] boolValue]){
 		self.colorSwitch.on = YES;
 	}else{
 		self.colorSwitch.on = NO;
@@ -66,13 +71,18 @@
 	self.attributionTextView.backgroundColor = [UIColor whiteColor];
 }
 
+-(void)viewWillAppear:(BOOL)animated
+{
+	[self.navigationController setToolbarHidden:YES];
+}
+
 -(BOOL)save
 {
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	
 	NSString *email = self.recipientTextField.text;
 	if ([self IsValidEmail:email] || [email isEqualToString:@""]){
-		[defaults setObject:self.recipientTextField.text forKey:@"defaultRecipient"];
+		[defaults setObject:self.recipientTextField.text forKey:kDefaultRecipientKey];
 		[defaults synchronize];
 		return YES;
 	}else{
@@ -125,10 +135,10 @@
 		NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
 		[self save];
 		if (self.colorSwitch.on){
-			[def setValue:[NSNumber numberWithBool:YES] forKey:@"colors"];
+			[def setValue:[NSNumber numberWithBool:YES] forKey:kColorsKey];
 			[def synchronize];
 		}else{
-			[def setValue:[NSNumber numberWithBool:NO] forKey:@"colors"];
+			[def setValue:[NSNumber numberWithBool:NO] forKey:kColorsKey];
 			[def synchronize];
 		}
 		self.navigationController.delegate = nil;

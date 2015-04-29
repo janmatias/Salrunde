@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MapViewController : UIViewController
+@interface MapViewController : UIViewController <UIWebViewDelegate>
 
 @property (nonatomic) BOOL useLLF;
 @property (strong, nonatomic) NSString * ID;

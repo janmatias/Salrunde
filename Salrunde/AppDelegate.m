@@ -11,6 +11,7 @@
 #import "NetworkHandler.h"
 #import "MyNavController.h"
 #import "PrinterViewController.h"
+#import "Constants.h"
 
 @interface AppDelegate ()
 
@@ -21,9 +22,21 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	// Override point for customization after application launch.
-	[[NSUserDefaults standardUserDefaults] setObject:@0 forKey:@"DEBUG"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	
+	if (![defaults floatForKey:kVersionKey] || [defaults floatForKey:kVersionKey] < VERSION){
+		BOOL colors = [[defaults objectForKey:kColorsKey] boolValue];
+		NSString *defRec = ((NSString *)[defaults objectForKey:kDefaultRecipientKey]);
+		
+		[defaults removePersistentDomainForName:[[NSBundle mainBundle] bundleIdentifier]];
+		[defaults synchronize];
+		
+		[defaults setFloat:VERSION forKey:kVersionKey];
+		[defaults setObject:@0 forKey: kDebugKey];
+		[defaults setObject:[NSNumber numberWithBool:colors] forKey:kColorsKey];
+		[defaults setObject:defRec forKey:kDefaultRecipientKey];
+		[defaults synchronize];
+	}
 	
 	((MyNavController *)self.window.rootViewController).nh = [[NetworkHandler alloc] init];
 

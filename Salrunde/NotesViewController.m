@@ -10,6 +10,7 @@
 #import "MainViewController.h"
 #import "LocationTableViewController.h"
 #import "PrinterViewController.h"
+#import "Constants.h"
 
 @interface NotesViewController()
 
@@ -18,6 +19,8 @@
 @property (strong, nonatomic) UIBarButtonItem *delete;
 @property (strong, nonatomic) UIBarButtonItem *done;
 @property (strong, nonatomic) UIBarButtonItem *undo;
+
+@property BOOL resized;
 
 @property CGFloat height;
 
@@ -32,7 +35,7 @@
 	self.notes.delegate = self;
 	
 	[self.notes setContentOffset:CGPointMake(0, 0) animated:NO];
-	self.notes.text = [[NSUserDefaults standardUserDefaults] objectForKey:@"notes"];
+	self.notes.text = [[NSUserDefaults standardUserDefaults] objectForKey:kNotesKey];
 	
 	self.done = [[UIBarButtonItem alloc] initWithTitle:@"Ferdig" style:UIBarButtonItemStylePlain target:self action:@selector(pressDone)];
 	self.undo = [[UIBarButtonItem alloc] initWithTitle:@"Angre" style:UIBarButtonItemStylePlain target:self action:@selector(pressUndo)];
@@ -54,6 +57,12 @@
 											   object:nil];
 }
 
+-(void)viewWillAppear:(BOOL)animated
+{
+	self.resized = NO;
+	[self.navigationController setToolbarHidden:YES];
+}
+
 -(void)viewWillDisappear:(BOOL)animated
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -68,37 +77,46 @@
 
 -(void)pressDelete
 {
-	self.notes.text = @"";
-	self.navigationItem.rightBarButtonItem = self.undo;
+	if (![self.notes.text isEqualToString:@""]){
+		self.notes.text = @"";
+		self.navigationItem.rightBarButtonItem = self.undo;
+	}
 }
 
 -(void)pressUndo
 {
-	self.notes.text = [[NSUserDefaults standardUserDefaults] objectForKey:@"notes"];
+	self.notes.text = [[NSUserDefaults standardUserDefaults] objectForKey:kNotesKey];
 	self.navigationItem.rightBarButtonItem = self.delete;
 }
 
 -(void)keyboardDidShow:(NSNotification *)not
 {
-	self.height = [[not.userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height - self.navigationController.toolbar.frame.size.height;
-	for (NSLayoutConstraint *con in self.notes.constraints){
-		NSLog(@"desc: %@", con.description);
+	NSLog(@"Resized: %i", self.resized);
+	if (!self.resized){
+		self.height = [[not.userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height - self.navigationController.toolbar.frame.size.height;
+		self.notes.frame = CGRectMake(self.notes.frame.origin.x, self.notes.frame.origin.y, self.notes.frame.size.width, self.notes.frame.size.height - self.height - 50);
+		[self.view layoutIfNeeded];
+		self.resized = YES;
+	}else{
+		self.notes.frame = CGRectMake(self.notes.frame.origin.x, self.notes.frame.origin.y, self.notes.frame.size.width, self.notes.frame.size.height + self.height);
+		self.height = [[not.userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height - self.navigationController.toolbar.frame.size.height;
+		self.notes.frame = CGRectMake(self.notes.frame.origin.x, self.notes.frame.origin.y, self.notes.frame.size.width, self.notes.frame.size.height - self.height);
+		[self.view layoutIfNeeded];
 	}
-	self.notes.frame = CGRectMake(self.notes.frame.origin.x, self.notes.frame.origin.y, self.notes.frame.size.width, self.notes.frame.size.height - self.height);
-	[self.view layoutIfNeeded];
 }
 
 -(void)keyboardWillHide:(NSNotification *)not
 {
-	self.notes.frame = CGRectMake(self.notes.frame.origin.x, self.notes.frame.origin.y, self.notes.frame.size.width, self.notes.frame.size.height + self.height);
-	[self.view layoutIfNeeded];
+	if (self.resized){
+		self.notes.frame = CGRectMake(self.notes.frame.origin.x, self.notes.frame.origin.y, self.notes.frame.size.width, self.notes.frame.size.height + self.height + 50);
+		[self.view layoutIfNeeded];
+		self.resized = NO;
+	}
 }
 
 -(void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
 {
-	if ([viewController isKindOfClass:[MainViewController class]] ||
-		[viewController isKindOfClass:[LocationTableViewController class]] ||
-		[viewController isKindOfClass:[PrinterViewController class]])
+	if (![viewController isKindOfClass:[self class]])
 	{
 		[self save];
 		self.navigationController.delegate = nil;
@@ -112,7 +130,7 @@
 
 -(void)save
 {
-	[[NSUserDefaults standardUserDefaults] setObject:self.notes.text forKey:@"notes"];
+	[[NSUserDefaults standardUserDefaults] setObject:self.notes.text forKey:kNotesKey];
 }
 
 -(BOOL)automaticallyAdjustsScrollViewInsets

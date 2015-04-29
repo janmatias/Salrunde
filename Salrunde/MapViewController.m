@@ -9,40 +9,37 @@
 #import "MapViewController.h"
 #import <CoreLocation/CoreLocation.h>
 
-@interface MapViewController () <CLLocationManagerDelegate>
+@interface MapViewController ()
 
-//@property (weak, nonatomic) IBOutlet UIWebView *webView;
 @property (strong, nonatomic) UIWebView *webView;
 @property (strong, nonatomic) CLLocationManager *locMan;
 @property (nonatomic) CLLocationCoordinate2D coordinate;
-@property (nonatomic) BOOL canAccesLocation;
+
+@property (strong, nonatomic) UIActivityIndicatorView *spinner;
 
 @end
 
 @implementation MapViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-	self.canAccesLocation = NO;
-	self.locMan = [[CLLocationManager alloc] init];
-	self.locMan.delegate = self;
-	self.locMan.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
-	self.locMan.distanceFilter = 10;
-}
-
 -(void)viewWillDisappear:(BOOL)animated
 {
+	self.webView.delegate = nil;
 	[[self.view subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
+	[self.navigationController setToolbarHidden:YES];
 	self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+	self.webView.delegate = self;
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
-	[self setUpLocationHandling];
+	self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+	self.spinner.center = self.view.center;
+	[self.spinner startAnimating];
+	[self.view addSubview:self.spinner];
 	[self setUpMap];
 }
 
@@ -53,7 +50,6 @@
 	NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
 	
 	[self.webView loadRequest:requestObj];
-	[self.view addSubview:self.webView];
 }
 
 -(void)updateMap
@@ -78,44 +74,17 @@
 		[url appendString:[NSString stringWithFormat:@"&desttype=poi&dest=%@", self.ID]];
 	}
 	
-	if (self.canAccesLocation) {
-		[url appendString:[NSString stringWithFormat:@"&starttype=point&start=%f,%fl", self.coordinate.latitude, self.coordinate.longitude]];
-	}
 	NSLog(@"Map show content for URL: %@", url);
 	return url;
 }
 
--(void)setUpLocationHandling
-{
-	switch ([CLLocationManager authorizationStatus]) {
-		case kCLAuthorizationStatusNotDetermined:
-			[self.locMan requestWhenInUseAuthorization];
-			break;
-		case kCLAuthorizationStatusDenied:
-			//[self showNoLocationAlert];
-			break;
-		default:
-			break;
-	}
-	
+-(void)webViewDidFinishLoad:(UIWebView *)webView{
+	[self.view addSubview:self.webView];
+	[self.spinner stopAnimating];
+	[self.spinner removeFromSuperview];
 }
 
--(void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
-{
-	if (status == kCLAuthorizationStatusAuthorizedWhenInUse){
-		self.canAccesLocation = YES;
-		[self.locMan startUpdatingLocation];
-	}
-}
-
--(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
-{
-	self.coordinate = ((CLLocation *)[locations lastObject]).coordinate;
-	[self updateMap];
-}
-
--(void)showNoLocationAlert
-{
-	
+-(void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error{
+	NSLog(@"Error loading page!");
 }
 @end

@@ -10,7 +10,7 @@
 
 @implementation Room
 
-+(Room *)roomWithName:(NSString *)name Building: (NSString *)building ID: (NSString *)ID A4:(BOOL)A4 A3:(BOOL)A3 svart:(BOOL)svart farge:(BOOL)farge kortleser:(BOOL)kortleser xero:(BOOL)xero fuser:(BOOL)fuser
++(Room *)roomWithName:(NSString *)name Building: (NSString *)building ID: (NSString *)ID A4:(BOOL)A4 A3:(BOOL)A3 black:(BOOL)black color:(BOOL)color cardReader:(BOOL)cardReader xero:(BOOL)xero fuser:(BOOL)fuser
 {
 	Room *r = [[Room alloc] init];
 	r.name = name;
@@ -18,19 +18,19 @@
 	r.ID = ID;
 	r.A4 = A4;
 	r.A3 = A3;
-	r.svart = svart;
-	r.farge = farge;
-	r.kortleser = kortleser;
+	r.black = black;
+	r.color = color;
+	r.cardReader = cardReader;
 	r.xero = xero;
 	r.fuser = fuser;
 	r.useLLF = NO;
 	
-	r.lager = NO;
+	r.storage = NO;
 	r.tynnklient = NO;
 	return r;
 }
 
-+(Room *)roomWithName: (NSString *)name Building: (NSString *)building Lat: (NSString *)latitude Long: (NSString *)longitude Floor: (NSString *)floor A4:(BOOL) A4 A3:(BOOL) A3 svart: (BOOL) svart farge: (BOOL) farge kortleser: (BOOL) kortleser xero:(BOOL)xero fuser:(BOOL)fuser
++(Room *)roomWithName: (NSString *)name Building: (NSString *)building Lat: (NSString *)latitude Long: (NSString *)longitude Floor: (NSString *)floor A4:(BOOL) A4 A3:(BOOL) A3 black: (BOOL) black color: (BOOL) color cardReader: (BOOL) cardReader xero:(BOOL)xero fuser:(BOOL)fuser
 {
 	Room *r = [[Room alloc] init];
 	r.name = name;
@@ -40,19 +40,19 @@
 	r.floor = floor;
 	r.A4 = A4;
 	r.A3 = A3;
-	r.svart = svart;
-	r.farge = farge;
-	r.kortleser = kortleser;
+	r.black = black;
+	r.color = color;
+	r.cardReader = cardReader;
 	r.xero = xero;
 	r.fuser = fuser;
 	r.useLLF = YES;
 	
-	r.lager = NO;
+	r.storage = NO;
 	r.tynnklient = NO;
 	return r;
 }
 
-+(Room *)lagerWithName:(NSString *)name Building: (NSString *)building ID: (NSString *)ID A4:(BOOL) A4 A3:(BOOL) A3 svart: (BOOL) svart farge: (BOOL) farge
++(Room *)storageWithName:(NSString *)name Building: (NSString *)building ID: (NSString *)ID A4:(BOOL) A4 A3:(BOOL) A3 black: (BOOL) black color: (BOOL) color
 {
 	Room *r = [[Room alloc] init];
 	r.name = name;
@@ -60,16 +60,16 @@
 	r.ID = ID;
 	r.A4 = A4;
 	r.A3 = A3;
-	r.svart = svart;
-	r.farge = farge;
-	r.kortleser = NO;
+	r.black = black;
+	r.color = color;
+	r.cardReader = NO;
 	
-	r.lager = YES;
+	r.storage = YES;
 	r.tynnklient = NO;
 	return r;
 }
 
-+(Room *)lagerWithName: (NSString *)name Building: (NSString *)building Lat: (NSString *)latitude Long: (NSString *)longitude Floor: (NSString *)floor A4:(BOOL) A4 A3:(BOOL) A3 svart: (BOOL) svart farge: (BOOL) farge
++(Room *)storageWithName: (NSString *)name Building: (NSString *)building Lat: (NSString *)latitude Long: (NSString *)longitude Floor: (NSString *)floor A4:(BOOL) A4 A3:(BOOL) A3 black: (BOOL) black color: (BOOL) color
 {
 	Room *r = [[Room alloc] init];
 	r.name = name;
@@ -79,11 +79,11 @@
 	r.floor = floor;
 	r.A4 = A4;
 	r.A3 = A3;
-	r.svart = svart;
-	r.farge = farge;
+	r.black = black;
+	r.color = color;
 	r.useLLF = YES;
 	
-	r.lager = YES;
+	r.storage = YES;
 	r.tynnklient = NO;
 	return r;
 }
@@ -95,11 +95,11 @@
 	r.building = building;
 	r.A4 = NO;
 	r.A3 = NO;
-	r.svart = NO;
-	r.farge = NO;
-	r.kortleser = NO;
+	r.black = NO;
+	r.color = NO;
+	r.cardReader = NO;
 	
-	r.lager = NO;
+	r.storage = NO;
 	r.tynnklient = YES;
 	return r;}
 

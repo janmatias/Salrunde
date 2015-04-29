@@ -17,9 +17,13 @@
 	UIBarButtonItem *settings = [[UIBarButtonItem alloc] initWithTitle:@"Innstillinger" style:UIBarButtonItemStylePlain target:self action:@selector(pressSettings)];
 	self.navigationItem.rightBarButtonItem = settings;
 	
-	[self.navigationController setToolbarHidden:NO];
 	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showNotes)];
 	[self.navigationController.toolbar addGestureRecognizer:tap];
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+	[self.navigationController setToolbarHidden:NO];
 }
 
 -(void)pressSettings

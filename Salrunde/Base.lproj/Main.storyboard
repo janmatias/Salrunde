@@ -59,13 +59,14 @@
                                     <action selector="updateUIAccordingToEmail" destination="vfH-qj-eqR" eventType="editingChanged" id="lXX-zo-cun"/>
                                 </connections>
                             </textField>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BzL-P6-7wW">
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="BzL-P6-7wW">
                                 <rect key="frame" x="16" y="550" width="568" height="50"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="i0H-yL-Xrr"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                 <dataDetectorType key="dataDetectorTypes" link="YES"/>
                             </textView>
@@ -76,13 +77,27 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="QLE-CM-6WJ">
-                                <rect key="frame" x="345" y="239" width="51" height="31"/>
+                                <rect key="frame" x="345" y="234" width="51" height="31"/>
                             </switch>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Farger:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qlD-y3-CcJ">
                                 <rect key="frame" x="206" y="239" width="54" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O0d-gq-lYD">
+                                <rect key="frame" x="542" y="72" width="42" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="fgZ-WP-zam"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="fgZ-WP-zam"/>
+                                    </mask>
+                                </variation>
                             </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -95,10 +110,13 @@
                             <constraint firstAttribute="centerX" secondItem="phV-NK-Vld" secondAttribute="centerX" id="Ij0-gQ-R0p"/>
                             <constraint firstItem="QLE-CM-6WJ" firstAttribute="trailing" secondItem="t4X-FL-ik3" secondAttribute="trailing" id="K5e-9q-Eto"/>
                             <constraint firstAttribute="centerX" secondItem="BzL-P6-7wW" secondAttribute="centerX" id="Pmu-T4-jLK"/>
+                            <constraint firstItem="O0d-gq-lYD" firstAttribute="trailing" secondItem="BzL-P6-7wW" secondAttribute="trailing" id="VTl-Oz-Ght"/>
                             <constraint firstItem="BzL-P6-7wW" firstAttribute="trailing" secondItem="pgT-TW-Kx9" secondAttribute="trailingMargin" id="VYi-c9-sEz"/>
                             <constraint firstItem="BzL-P6-7wW" firstAttribute="leading" secondItem="pgT-TW-Kx9" secondAttribute="leadingMargin" id="daU-3g-3WI"/>
                             <constraint firstAttribute="centerY" secondItem="t4X-FL-ik3" secondAttribute="centerY" id="lCP-9j-hyG"/>
+                            <constraint firstItem="O0d-gq-lYD" firstAttribute="top" secondItem="Tfh-kJ-T4C" secondAttribute="bottom" constant="8" symbolic="YES" id="lKT-JP-HWn"/>
                             <constraint firstItem="qlD-y3-CcJ" firstAttribute="top" secondItem="t4X-FL-ik3" secondAttribute="bottom" constant="45" id="rMV-TS-VJP"/>
+                            <constraint firstItem="QLE-CM-6WJ" firstAttribute="centerY" secondItem="qlD-y3-CcJ" secondAttribute="centerY" id="ttV-Tp-pLt"/>
                             <constraint firstItem="qlD-y3-CcJ" firstAttribute="leading" secondItem="t4X-FL-ik3" secondAttribute="leading" id="wBc-YJ-ptN"/>
                             <constraint firstAttribute="centerX" secondItem="K7X-RN-wGF" secondAttribute="centerX" id="yTQ-7j-qbx"/>
                             <constraint firstItem="QLE-CM-6WJ" firstAttribute="top" secondItem="t4X-FL-ik3" secondAttribute="bottom" constant="45" id="yth-HJ-8dD"/>
@@ -106,6 +124,7 @@
                         <variation key="default">
                             <mask key="constraints">
                                 <exclude reference="lCP-9j-hyG"/>
+                                <exclude reference="yth-HJ-8dD"/>
                             </mask>
                         </variation>
                     </view>
@@ -116,6 +135,7 @@
                         <outlet property="recipientErrorLabel" destination="K7X-RN-wGF" id="uU2-L9-k0i"/>
                         <outlet property="recipientLabel" destination="phV-NK-Vld" id="wUy-kY-Aj0"/>
                         <outlet property="recipientTextField" destination="t4X-FL-ik3" id="NZf-Hq-l2T"/>
+                        <outlet property="versionLabel" destination="O0d-gq-lYD" id="6BE-8k-RNx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9Sq-5A-MNU" userLabel="First Responder" sceneMemberID="firstResponder"/>
