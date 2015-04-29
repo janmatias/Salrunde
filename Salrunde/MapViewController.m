@@ -29,6 +29,7 @@
 
 -(void)viewWillAppear:(BOOL)animated
 {
+	self.title = @"Kart";
 	[self.navigationController setToolbarHidden:YES];
 	self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
 	self.webView.delegate = self;

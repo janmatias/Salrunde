@@ -56,7 +56,7 @@
 @property (strong, nonatomic) NSArray *storageTonerValues;
 @property (strong, nonatomic) NSArray *storagePaperValues;
 @property (strong, nonatomic) NSArray *printerPaperValues;
-@property (strong, nonatomic) NSMutableArray *printerTonerValues;
+@property (strong, nonatomic) NSArray *printerTonerValues;
 @property (strong, nonatomic) NSArray *textFields;
 
 @property (strong, nonatomic) UIBarButtonItem *map;
@@ -77,7 +77,7 @@
 		self.navigationItem.rightBarButtonItem = self.map;
 	}
 	
-	self.done = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(resignFirstResponders)];
+	self.done = [[UIBarButtonItem alloc] initWithTitle:@"Ferdig" style:UIBarButtonItemStylePlain target:self action:@selector(resignFirstResponders)];
 	
 	[self setProperties];
 	
@@ -112,12 +112,7 @@
 	self.storagePaperValues = [NSArray arrayWithObjects:@"<10", @"10-20", @"20+", nil];
 	self.printerPaperValues = [NSArray arrayWithObjects:@"0", @"<2", @"2-4", @"5-20", @"20+", nil];
 	self.storageTonerValues = [NSArray arrayWithObjects:@"0", @"<2", @"2-4", @"5-20", @"20+", nil];
-	self.printerTonerValues = [NSMutableArray arrayWithObjects:@"<10%", @"10-20%", @">20%", nil];
-	/*
-	self.printerTonerValues = [[NSMutableArray alloc] init];
-	for (int i = 0; i<101; i++) {
-		[self.printerTonerValues addObject:[NSString stringWithFormat:@"%i%%", i]];
-	}*/
+	self.printerTonerValues = [NSArray arrayWithObjects:@"<10%", @"10-20%", @">20%", nil];
 }
 
 #pragma mark Picker View Methods

@@ -35,6 +35,7 @@
 {
     [super viewDidLoad];
 	
+	self.title = @"Innstillinger";
 	self.versionLabel.text = [NSString stringWithFormat:@"Versjon: %.1f", VERSION];
 	
 	// Setting delegates

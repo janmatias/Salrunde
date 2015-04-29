@@ -31,6 +31,8 @@
 
 -(void)viewDidLoad
 {
+	self.title = @"Notater";
+	
 	self.navigationController.delegate = self;
 	self.notes.delegate = self;
 	
